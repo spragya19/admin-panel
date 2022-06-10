@@ -1,0 +1,33 @@
+.fee-form {
+    margin-left: 11rem;
+    margin-top: 4rem;
+}
+
+.tb{
+    margin-left: 3rem;
+}
+
+.customtbl {
+    margin-left: -68vw!important;
+}
+
+.cstm-tbl {
+    margin-left: 0;
+    width: 40vw;
+}
+
+.cstm-tbl tr td:first-child {
+    background-color: black;
+    color: white;
+}
+
+.cstm-tbl tr td:last-child {
+    background-color: lightgray;
+    border: none;
+}
+.transaction{
+    margin-top: 28rem;
+    margin-right: 58rem;
+    padding-bottom: 5%;
+    
+}

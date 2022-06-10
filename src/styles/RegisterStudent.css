@@ -1,0 +1,27 @@
+.student-form{
+    margin-top: 7rem;
+    width: 90vw;
+   
+}
+.tb{
+    margin-left: 3rem;
+}
+
+.customtbl {
+    margin-left: -68vw!important;
+}
+
+.cstm-tbl {
+    margin-left: 0;
+    width: 40vw;
+}
+
+.cstm-tbl tr td:first-child {
+    background-color: black;
+    color: white;
+}
+
+.cstm-tbl tr td:last-child {
+    background-color: lightgray;
+    border: none;
+}

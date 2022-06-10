@@ -1,0 +1,24 @@
+.wrapper {
+    display: flex;
+}
+
+.customtbl
+{
+    margin-top: 18rem!important;
+    margin-left: -20rem!important;
+    margin-right: 5rem!important;
+}
+
+.customtbl table {
+    border: 1px solid black;
+}
+
+.customtbl table th, .customtbl table td {
+    border: 1px solid black;
+    padding: 1rem; 
+}
+
+.customtbl table thead {
+    background-color: black;
+    color: white;
+}
