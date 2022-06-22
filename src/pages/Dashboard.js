@@ -20,7 +20,6 @@ function Dashboard() {
       {loggedIn ? (
         <div className="wrapper">
           <Sidebar />
-          {/* <Board /> */}
           <Outlet />
         </div>
       ) : (

@@ -1,5 +1,5 @@
 .student-form{
-    margin-top: 7rem;
+    margin-top: 2rem;
     width: 90vw;
    
 }
@@ -24,4 +24,21 @@
 .cstm-tbl tr td:last-child {
     background-color: lightgray;
     border: none;
+}
+
+.hed{
+    margin-top: 5rem;
+
+}
+.detail{
+   
+    border: 1px solid black;
+    padding: 10%;
+    width: 650px;
+   
+
+   
+}
+.btn{
+    align-items: center;
 }

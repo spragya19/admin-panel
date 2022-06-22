@@ -1,33 +1,42 @@
 .fee-form {
-    margin-left: 11rem;
-    margin-top: 4rem;
+    margin-left: 10rem;
+    margin-top: 2rem;
 }
 
 .tb{
     margin-left: 3rem;
+ 
+}
+
+.txn {
+    margin-left: 16rem;
+    width: 70vw!important;
 }
 
 .customtbl {
     margin-left: -68vw!important;
+  
 }
 
-.cstm-tbl {
-    margin-left: 0;
-    width: 40vw;
+.cstm-tbll > .d-flex > div {
+    width: 200px;
+    border-bottom: 1px solid black;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
 }
 
-.cstm-tbl tr td:first-child {
-    background-color: black;
-    color: white;
-}
-
-.cstm-tbl tr td:last-child {
-    background-color: lightgray;
-    border: none;
-}
 .transaction{
-    margin-top: 28rem;
-    margin-right: 58rem;
+    margin-top: 33rem;
     padding-bottom: 5%;
     
+}
+.detail{
+   
+    border: 1px solid black;
+    padding: 5%;
+    padding-bottom: 16px!important;
+    /* margin: 10px auto; */
+}
+.deet{
+    margin-left: 10px;
 }

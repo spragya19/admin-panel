@@ -2,11 +2,8 @@ import { Field, Formik, Form, ErrorMessage } from "formik";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/RegisterUser.css";
-import firebase from "firebase/compat/app";
 import { collection, addDoc, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
-import { async } from "@firebase/util";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import Spinner from "./Spinner.js";
@@ -18,7 +15,8 @@ const EditStudent = () => {
   const [dataShow, setData] = useState([]);
   const { studentId } = useParams();
   const [details, setDetails] = useState({
-    username: "",
+    name: "",
+    email: "",   
     password: "",
     MobileNumber: "",
     Fathername: "",
@@ -26,10 +24,13 @@ const EditStudent = () => {
     parentnumber: "",
     uid: "",
   });
+ console.log(details)
 
   useEffect(() => {
+  
+
     (async () => {
-      const querySnapshot = await getDocs(collection(db, "users"));
+      const querySnapshot = await getDocs(collection(db, "student"));
       const list = [];
       querySnapshot.forEach((doc) => {
         if (doc.id === studentId) {
@@ -44,13 +45,13 @@ const EditStudent = () => {
   const changeHandler = (e) => {
     setDetails((oldData) => {
       return { ...oldData, [e.target.name]: e.target.value };
+      
     });
   };
 
   const handleSubmit = () => {
     console.log(details);
     // const updateRef = doc(db, "student",     );
-    
 
     // console.log("Data submitted");
   };
@@ -80,12 +81,12 @@ const EditStudent = () => {
                           <Field
                             className="form-control"
                             type="text"
-                            name="username"
-                            value={details.username}
+                            name="name"
+                            value={details.name}
                             onChange={changeHandler}
                           />
                           <span className="text-danger">
-                            <ErrorMessage name="username" />
+                            <ErrorMessage name="name" />
                           </span>
                         </div>
                       </div>

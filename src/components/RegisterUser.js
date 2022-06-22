@@ -4,21 +4,32 @@ import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import "../styles/RegisterUser.css";
 import firebase from "firebase/compat/app";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  serverTimestamp,
+  query,
+  where,
+} from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 import { async } from "@firebase/util";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import Spinner from "./Spinner.js";
-
+const role = [
+  { name: "Admin", value: "1" },
+  { name: "Staff", value: "2" },
+  { name: "Student", value: "3" },
+];
 const RegisterUser = () => {
   const [dataShow, setShow] = useState([]);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [data, setdata] = useState({
     role: "",
-    username: "",
+    name: "",
     email: "",
     password: "",
     MobileNumber: "",
@@ -26,7 +37,17 @@ const RegisterUser = () => {
     Mothername: "",
     parentnumber: "",
     uid: "",
+    userName: "",
   });
+
+  const createUserName = async () => {
+    const year = new Date().getFullYear().toString().slice(-2);
+    const q = query(collection(db, "users"), where("role", "==", "3"));
+    const studentSnapshot = await getDocs(q);
+    const studentsLength = String(studentSnapshot.size).padStart(2, 0);
+    // console.log(totalStudents)
+    return "PR" + year + studentsLength ;
+  };
 
   //authentication
 
@@ -34,64 +55,49 @@ const RegisterUser = () => {
     const authentication = getAuth();
 
     try {
-     const userDetail =  await createUserWithEmailAndPassword(authentication, data.email, data.password);
-      // console.log(user);
-     const copy = {...data}
-     copy.uid = userDetail.user.uid
-     
-     console.log(copy);
-     addDoc(collection(db, 'users'), copy )
-      toast("Registered Successfully!!")
-     
+      const userDetail = await createUserWithEmailAndPassword(
+        authentication,
+        data.email,
+        data.password
+      );
 
+      const copy = { ...data };
+      copy.uid = userDetail.user.uid;
+      data.userName = await createUserName();
+      copy.timestamp = serverTimestamp();
+
+      addDoc(collection(db, "users"), {
+        role: data.role,
+        userName: data.userName,
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        MobileNumber: data.MobileNumber,
+        uid: copy.uid,
+        Fathername: data.Fathername,
+        Mothername: data.Mothername,
+        parentnumber: data.parentnumber,
+      });
+      toast("Registered Successfully!!");
     } catch (error) {
-        console.log(error)
-      toast("Some error occured!!")
-
+      console.log(error);
+      toast("Some error occured!!");
     }
-
-
-    // await createUserWithEmailAndPassword(authentication, data.email, data.password)
-    //   .then((response) => {
-    //     const userId = response.user.uid
-    //     adddata( data, userId );
-    //     console.log(response)
-    //     console.log(response.user.uid)
-    //     console.log(response.user)
-    //     sessionStorage.setItem(
-    //       "Auth Token",
-    //       response._tokenResponse.refreshToken
-    //     );
-    //     return response.user.uid;
-    //   })
-    //   // .then((res) => adddata(data, res))
-    //   .catch((err) => alert("error"));
   };
-
-  ///firebase data store
-  // const adddata = async (formData, uid) => {
-  //   console.log(uid);
-  //   console.log(formData);
-  //   await addDoc(collection(db, "users"), {...formData})
-  //     .then((res) => toast("Registered Successfully!!"))
-  //     .catch((err) => {
-  //       console.log("Error registering user - ", err);
-  //       toast("Some Error Occurred!!");
-  //     });
-  // };
 
   const handleSubmit = (data) => {
     setLoading(true);
-     Authentication(data);
-    // await adddata(data);
-    // console.log(data);
+    Authentication(data);
+
     setLoading(false);
-    // navigate("/dashboard/register-stud");
+    navigate("/dashboard/register-stud");
   };
+  const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
+
 
   const validate = Yup.object({
     role: Yup.string().required("Required"),
-    username: Yup.string()
+    name: Yup.string()
       .min(3, "Too Short")
       .max(10, "Too Long")
       .required("Required"),
@@ -107,7 +113,12 @@ const RegisterUser = () => {
       .typeError("That doesn't look like a phone number")
       .positive("A phone number can't start with a minus")
       .integer("A phone number can't include a decimal point")
-      .min(8)
+      
+    
+      .min(10, "to short")
+     
+      
+     
       .required("Required"),
     Fathername: Yup.string()
       .min(3, "Too Short")
@@ -121,9 +132,9 @@ const RegisterUser = () => {
       .typeError("That doesn't look like a phone number")
       .positive("A phone number can't start with a minus")
       .integer("A phone number can't include a decimal point")
-      .min(8)
-      .required(" Required"),
+      .min(10, "Too Short")
       
+      .required(" Required"),
   });
 
   return (
@@ -159,10 +170,11 @@ const RegisterUser = () => {
                             name="role"
                             as="select"
                           >
-                            <option>Roles</option>
-                            <option>Admin</option>
-                            <option>Staff</option>
-                            <option>Student</option>
+                            {role.map(({ name, value }) => (
+                              <option key={value} value={value}>
+                                {name}
+                              </option>
+                            ))}
                           </Field>
                           <span className="text-danger">
                             <ErrorMessage name="role" />
@@ -171,14 +183,14 @@ const RegisterUser = () => {
                       </div>
                       <div className="col-sm-6 xs-12  mt-3">
                         <div className="form-group">
-                          <label htmlFor="">User Name</label>
+                          <label htmlFor=""> Name</label>
                           <Field
                             className="form-control"
                             type="text"
-                            name="username"
+                            name="name"
                           />
                           <span className="text-danger">
-                            <ErrorMessage name="username" />
+                            <ErrorMessage name="name" />
                           </span>
                         </div>
                       </div>
@@ -231,7 +243,7 @@ const RegisterUser = () => {
                       </div>
                       <div className="col-sm-6 col-xs-12  mt-3">
                         <div className="form-group">
-                          <label htmlFor="">FatherName</label>
+                          <label htmlFor="">Father Name</label>
                           <Field
                             className="form-control"
                             type="text"
@@ -292,3 +304,5 @@ const RegisterUser = () => {
 };
 
 export default RegisterUser;
+
+

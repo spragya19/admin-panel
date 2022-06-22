@@ -2,81 +2,199 @@ import React, { useEffect, useState } from "react";
 import "../styles/ClassList.css";
 import { Row, Col, Card, Form, Button, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, deleteDoc, orderBy } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { doc, getDoc, query, where } from "firebase/firestore";
+import Spinner from "./Spinner";
+import DataTable from "react-data-table-component";
+import { MdDelete, MdEdit } from "react-icons/md";
+import Swal from "sweetalert2";
+import { CSVLink, CSVDownload } from "react-csv";
+import { paths } from "../Routing/paths";
 
 
 const ClassList = () => {
   const [dataShow, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
+  const [open, setOpen] = useState(false);
+
   const navigate = useNavigate();
 
+  const actionEdit = async (id) => {
+    try {
+      const netEditElement = dataShow.find((elemnt) => elemnt.id === id);
+      navigate(paths.getCourseEdit(id), { state: netEditElement });
+    } catch (err) {
+      alert(err);
+    }
+  };
+
+  const headers = [
+    { label: "Class", key: "class" },
+    { label: "Class Code", key: "classcode" },
+    { label: "Monthly Fee", key: "monthlyfee" },
+    { label: "Admission Fee", key: "admissionfee" },
+  
+  ];
+  const actionDelete = async (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((willDelete) => {
+      if (willDelete) {
+        deleteDoc(doc(db, "class", id));
+        const oneIndex = dataShow.findIndex((val) => val.id === id);
+        const cloned = [...dataShow];
+        cloned.splice(oneIndex, 1);
+        setData(cloned);
+        setOpen(false);
+        Swal.fire("Deleted!", "Your file has been deleted.", "success");
+      }
+    });
+  };
+  // function ClassData() {
+  //   const custs = [];
+  //   for (let i = 0; i <= 25; i++) {
+  //     custs[i] = {
+  //     class: 'class',
+  //       classcode: 'classcode',
+  //      admissionFee: 'admissionFee'
+  //     monthlyFee:
+  //     };
+  //   }
+  //   return custs;
+  // }
 
   useEffect(() => {
     (async () => {
-      const querySnapshot = await getDocs(collection(db, "classes"));
+      const querySnapshot = collection(db, "classes");
+      const Sort = query(querySnapshot, orderBy("timestamp", "asc"));
+      const querySnap2 = await getDocs(Sort);
+
       const list = [];
-      querySnapshot.forEach((doc) => {
+      querySnap2.forEach((doc) => {
         list.push({ ...doc.data(), id: doc.id });
       });
       setData(list);
       navigate("/dashboard/ClassList");
     })();
   }, []);
+  function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  const columns = [
+    {
+      name: "Class",
+      selector: (row) => row.class,
+
+      sortable: true,
+    },
+
+    {
+      name: "Class Code",
+      selector: (row) => row.classcode,
+
+      sortable: true,
+    },
+    {
+      name: "Monthly Fee",
+      selector: (row) => "₹" + numberWithCommas(row.monthlyfee),
+      sortable: true,
+    },
+    {
+      name: "Admission Fee",
+      selector: (row) => "₹" + numberWithCommas(row.admissionfee),
+      sortable: true,
+    },
+
+    {
+      name: "Actions",
+      selector: (row) => (
+        <div>
+         
+
+          {/* <button onClick={() => actionEdit(row?.id)}>{<MdEdit />}</button>{" "} */}
+          <button onClick={() => actionDelete(row?.id)}>{<MdDelete />}</button>
+        </div>
+      ),
+      
+    },
+  ];
+
   return (
     <>
-     
-      <div className="Class-list">
-        <div className="container">
-          <Row>
-            <Col lg={3}></Col>
-            <Col sm={12}>
-              <div className="page-header">
-                <Row>
-                  <Col className="col">
-                    <h3 className="page-title">Courses</h3>
-                    <ul className="breadcrumb">
-                      <li className="breadcrumb-item">Dashboard</li>
-                      <li className="breadcrumb-item active">
-                        <Link to={`/dashboard/Course`}>Add Class</Link>
-                      </li>
-                    </ul>
-                  </Col>
-                </Row>
-              </div>
-              <Table className="table">
-                <thead>
-                  <tr>
-                    <th scope="col">Class</th>
-                    <th scope="col">Class Code</th>
-                  
-                    <th scope="col">Admission Fee</th>
-                    <th scope="col">Monthly Fee</th>
-                   
-                  
-                  </tr>
-                </thead>
-                <tbody>
-                  {dataShow?.map((list, index) => {
-                    return (
-                      <tr>
-                        <td>{list?.class}</td>
-                        <td>{list?.classcode}</td>
-                        <td>{list?.admissionfee}</td>
-                        <td>{list?.monthlyfee}</td>
-                        <td>
-                        <button type="button" className="btn btn-success"> <Link to = {`/dashboard/StudentList?classId=${list.class}`}>View Student</Link></button>
-                        </td>
+      {loading ? (
+        <Spinner />
+      ) : (
+        <div className="tablee">
+          <div className="container p-0 m-0">
+            <Row>
+              <Col lg={3}></Col>
+              <Col sm={12}>
+                <div className="page-headers">
+                  <Row className="container">
+                    <Col
+                      xs={12}
+                      className="d-flex align-items-center justify-content-between"
+                    >
+                      <h3 className="page-title">Class</h3>
                      
-                      </tr>
-                    );
+                        <CSVLink data={dataShow} className="text-dark "  filename="classes.csv"  headers={headers}>
+                        <Button className="btn btn-primary btn-block "> Export CSV </Button>
+                        </CSVLink>
+                     {" "}
+                    </Col>
+                    <Col className="col">
+                      <ul className="breadcrumb">
+                        <li className="breadcrumb-item">Dashboard</li>
+                      </ul>
+                    </Col>
+                  </Row>
+
+                  <div class="input-group mb-2">
+                    <div class="form-outline">
+                      <input
+                        type="search"
+                        onChange={(e) => {
+                          setSearch(e.target.value);
+                        }}
+                        class="form-control"
+                        placeholder="Search Class"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <DataTable
+                  columns={columns}
+                  data={dataShow.filter((val) => {
+                    if (search === "") {
+                      return val;
+                    } else if (
+                      val.class.toLowerCase().includes(search.toLowerCase())
+                    ) {
+                      return val;
+                    }
                   })}
-                </tbody>
-              </Table>
-            </Col>
-          </Row>
+                  striped
+                  highlightOnHover
+                  Sorting
+                  defaultSortField="name"
+                  pagination={1 - 5}
+                ></DataTable>
+              </Col>
+            </Row>
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 };

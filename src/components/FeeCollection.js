@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Field, Formik, Form, ErrorMessage } from "formik";
 import "../styles/FeeCollection.css";
 import { db } from "../firebase/firebaseConfig";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { addDoc } from "firebase/firestore";
 import {
   doc,
@@ -11,134 +11,282 @@ import {
   getDoc,
   query,
   where,
+  orderBy,
+  serverTimestamp,
 } from "firebase/firestore";
 import Spinner from "./Spinner";
 import { getFirestore, getDocs } from "firebase/firestore";
 import firebase from "firebase/app";
+import { toast } from "react-toastify";
+import ReactToPdf from "react-to-pdf";
+
+
 
 const FeeCollection = () => {
-  const [data, setdata] = useState({
-    class: "",
-    classcode: "",
+  const [flags, setFlags] = useState({
+    studentDataReceived: false,
+    classDataReceived: false,
+    studentDetailsReceived: false,
+    loading: false,
+    isVerified: false,
+    firstTimeFeePayment: false,
+    monthlyDisabled: false,
+    month: false,
+  
   });
 
-  const [classDetails, setClassDetails] = useState([]);
+  
+  
 
-  const [gotStudent, setGotStudent] = useState(false);
-  const [details, setDetails] = useState(null);
-  const [dataShow, setData] = useState([]);
-  const [dataReceived, setDataReceived] = useState(false);
-  const [stu, setStu] = useState();
-  const [loading, setLoading] = useState(false);
-  const [standard, setStandard] = useState([]);
-  const [transData, setTransData] = useState([]);
-  const [verified, setVerified] = useState(false);
-  const [transactions, setTransactions] = useState([]);
-  const [selectedStudent, setSelectedStudent] = useState();
+  const [selectedData, setSelectedData] = useState({
+    selectedUsername: null,
+    selectedClassCode: null,
+    selectedClassName: null,
+    selectedFeeType: null,
+    month: null,
+  });
+
+  const [formData, setFormData] = useState({
+    classData: [],
+    studentData: [],
+    studentDetails: {},
+    selectedClassData: [],
+    selectedStudentData: [],
+    transactionData: [],
+    transId: [],
+    feeData: {
+      monthlyfee: 0,
+      admissionfee: false,
+      pendingfee: 0,
+    },
+    month: [],
+  });
+  const navigate = useNavigate();
+
   useEffect(() => {
     (async () => {
-      const querySnapshot = await getDocs(collection(db, "classes"));
-      const stuquery = await getDocs(collection(db, "student"));
-      const stulist = [];
-      const list = [];
-      const c = [];
-      querySnapshot.forEach((doc) => {
-        list.push({ ...doc.data(), id: doc.id });
+      setFlags((oldData) => {
+        return { ...oldData, loading: true };
       });
-      stuquery.forEach((doc) => {
-        stulist.push({ ...doc.data(), id: doc.id });
+      let qry = null;
+      let stuDB = collection(db, "student");
+      let stuList = [];
+
+      qry = query(stuDB);
+      const stuSnap = await getDocs(qry);
+      stuSnap.forEach((doc) => stuList.push(doc.data()));
+      setFlags((oldData) => {
+        return { ...oldData, studentDataReceived: true };
       });
-      querySnapshot.forEach((doc) => {
-        c.push({ ...doc.data(), id: doc.id });
+
+      let classList = [];
+      let classDB = collection(db, "classes");
+      qry = query(classDB, orderBy("timestamp"));
+      const classSnap = await getDocs(qry);
+      classSnap.forEach((doc) => classList.push(doc.data()));
+
+      setFlags((oldData) => {
+        return { ...oldData, classDataReceived: true };
       });
-      for (let i = 0; i < c.length; i++) {
-        for (let j = i + 1; j < c.length; j++) {
-          if (+c[i].class > +c[j].class) {
-            let temp = c[i];
-            c[i] = c[j];
-            c[j] = temp;
-          }
-        }
-      }
-      setData(list);
-      setStu(stulist);
-      setStandard(c);
-      setDataReceived(true);
-      setVerified(true);
+
+      setFormData((oldData) => {
+        return { ...oldData, classData: classList, studentData: stuList };
+      });
+
+      setFlags((oldData) => {
+        return { ...oldData, loading: false };
+      });
     })();
   }, []);
 
   const adddata = async (formData) => {
     try {
-      const docRef = await addDoc(collection(db, "Transaction"), formData);
-      console.log("Document bID", docRef.id);
+      await addDoc(collection(db, "transaction"), formData);
+
+      const stuDB = collection(db, "student");
+      const student = query(stuDB, where("userName", "==", formData.userName));
+      const stuSnap = await getDocs(student);
+      let stuId = null;
+      stuSnap.forEach((doc) => (stuId = doc.id));
+
+      const updateRef = doc(db, "student", stuId);
+
+      if (formData.feeType == "monthlyfee") {
+        await updateDoc(updateRef, {
+          monthlyFeePaid: formData.feeAmount.toString(),
+        });
+      } else {
+        await updateDoc(updateRef, {
+          admissionFeePaid: formData.feeAmount.toString(),
+        });
+      }
+
+      
+
+      toast("Fee paid successfully!");
+      navigate("/dashboard/Transactions");
     } catch (e) {
       console.error("Error adding Details:", e);
+      toast("Some error occured!");
     }
   };
 
-  const handleSubmit = (data) => {
-    adddata(data);
-    console.log(data);
-  };
-  const [selectstudent, setselectstudent] = useState();
-  const [filterData, setfilterData] = useState();
-  useEffect(() => {
-    if (selectstudent) {
-      setfilterData(stu.filter((val) => val.Class === selectstudent));
+  const handleverify = async () => {
+    setFlags((oldData) => {
+      return { ...oldData, isVerified: true };
+    });
+
+    const txnQuery = collection(db, "transaction");
+    const tx = query(
+      txnQuery,
+      where("userName", "==", formData.studentDetails.userName)
+    );
+    const txnSnap = await getDocs(tx);
+    let userData = [];
+    txnSnap.forEach((doc) => {
+      userData.push( {transId: doc.id, ...doc.data() });
+    });
+
+    setFormData(oldData => {
+      return {...oldData, transactionData: userData};
+    })
+
+    if (userData.length <= 0) {
+      setFormData((oldData) => {
+        return {
+          ...oldData,
+        
+          feeData: {
+            monthlyfee: 0,
+            pendingfee: formData.selectedClassData[0].monthlyfee,
+            admissionfee: false,
+          },
+        };
+      });
+      setFlags((oldData) => {
+        return { ...oldData, firstTimeFeePayment: true, monthlyDisabled: true };
+      });
+      return;
     } else {
-      setfilterData(stu);
+      setFlags((oldData) => {
+        return { ...oldData, firstTimeFeePayment: false };
+      });
+
+      let monthlyfee = 0;
+      let admissionfee = false;
+
+      for (let i = 0; i < userData.length; i++) {
+        if (userData[i].feeType === "monthlyfee") {
+          monthlyfee += +userData[i].feeAmount;
+        }
+        if (userData[i].feeType === "admissionfee") {
+          admissionfee = true;
+        }
+      }
+
+      let pendingfee = formData.selectedClassData[0].monthlyfee - monthlyfee;
+
+      if (pendingfee <= 0) {
+        setFlags((oldData) => {
+          return { ...oldData, monthlyDisabled: true };
+        });
+      }
+
+      setFormData((oldData) => {
+        return {
+          ...oldData,
+          feeData: {
+            monthlyfee: formData.selectedClassData[0].monthlyfee,
+            admissionfee: admissionfee,
+            pendingfee: pendingfee,
+          },
+        };
+      });
     }
-  }, [selectstudent]);
+  };
 
-  const findUserHandler = async (e) => {
-    setGotStudent(false);
-    setDetails(null);
+  const findUserHandler = async (userid) => {
+    setFlags((oldData) => {
+      return { ...oldData, loading: true, studentDetailsReceived: false };
+    });
 
-    const userQuery = collection(db, "student");
-    const q = query(userQuery, where("username", "==", e.target.value));
+    const userQuery = collection(db, "users");
+    const q = query(userQuery, where("userName", "==", userid));
 
     const querySnap = await getDocs(q);
     querySnap.forEach((doc) => {
-      setDetails(doc.data());
+      setFormData((oldData) => {
+        return { ...oldData, studentDetails: doc.data() };
+      });
     });
 
-    const classQuery = collection(db, "classes");
-    const q2 = query(classQuery, where("classcode", "==", data.classcode));
+    let selectedClassData = formData.classData.filter(
+      (data) => data.classcode == selectedData.selectedClassCode
+    );
+    setFormData((oldData) => {
+      return { ...oldData, selectedClassData: selectedClassData };
+    });
 
-    const querySnap2 = await getDocs(q2);
-    let classDetail = [];
-    querySnap2.forEach(doc => classDetail.push(doc.data()))
-    console.log(classDetail[0]);
-    setClassDetails(classDetail[0])
-    setGotStudent(true);
+    setFlags((oldData) => {
+      return {
+        ...oldData,
+        loading: false,
+        studentDetailsReceived: true,
+        isVerified: false,
+      };
+    });
   };
 
-  // const handleSelect = (e) => {
+  const [txnData, setTxnData] = useState({
+    userName:"",
+    class: '',
+    rollNumber:""
+  });
 
-  //   setTransData((prevState) => ({
-  //     ...prevState,
-  //     type: e.target.value,
-  //   }));
+  const ref = React.createRef();
+  const options = {
+    orientation: 'landscape',
+};
 
-  //   if (e.target.value === "admissionFee") {
-  //     setTransData((prevState) => ({
-  //       ...prevState,
-  //       amount: data.admissionFee,
-  //     }));
-  //   } else if (e.target.value === "monthlyFee") {
-  //     setTransData((prevState) => ({
-  //       ...prevState,
-  //       amount: data.monthlyFee,
-  //     }));
-  //   }
-  // };
+  const handleTxnSubmit = async () => {
+ 
+    setFlags((oldData) => {
+      return { ...oldData, loading: true };
+    });
+    
+    let stuData = null;
+    if (selectedData.selectedFeeType == "monthlyfee") {
+      stuData = {
+        userName: formData.studentDetails.userName,
+        name: formData.studentDetails.name,
+        classcode: formData.selectedClassData[0].classcode,
+        class: formData.selectedClassData[0].class,
+        feeType: "monthlyfee",
+        feeAmount: flags.monthlyDisabled ? true : +formData.feeData.pendingfee,
+        timestamp: serverTimestamp(),
+      };
+    } else if (selectedData.selectedFeeType == "admissionfee") {
+      stuData = {
+        userName: formData.studentDetails.userName,
+        name: formData.studentDetails.name,
+        classcode: formData.selectedClassData[0].classcode,
+        class: formData.selectedClassData[0].class,
+        feeType: "admissionfee",
+        feeAmount: formData.selectedClassData[0].admissionfee,
+        timestamp: serverTimestamp(),
+      };
+    }
+    await adddata(stuData);
+    setFlags((oldData) => {
+      return { ...oldData, loading: false };
+    });
+  };
 
   return (
     <>
-      {loading && <Spinner />}
-      {dataReceived && (
-        <Formik initialValues={data} onSubmit={handleSubmit}>
+      {flags.loading && <Spinner />}
+      {!flags.loading && flags.classDataReceived && flags.studentDataReceived && (
+        <Formik initialValues={formData}>
           <Form>
             <div className="student-form">
               <div className="container p-0 m-0 ">
@@ -147,7 +295,7 @@ const FeeCollection = () => {
                     <div className="fixed-left"></div>
                   </div>
                   <div className="col-lg-9 ">
-                    <div className="row mt-2">
+                    <div className="row mt-2 mx-2">
                       <div className="col-sm-12">
                         <div className="topmg">
                           <h3 className="page-title">Fee Transaction</h3>
@@ -163,22 +311,38 @@ const FeeCollection = () => {
                             as="select"
                             placeholder="select student"
                             className="form-control"
-                            value={dataShow.class}
-                            onChange={(e) =>{
-                              const idx = e.target.options.selectedIndex;
-                  
-                              setdata(olddata => {
-                                return {...olddata, classcode:e.target.options[idx].getAttribute('class-code')}
-                              })
-                              return setselectstudent(e.target.value)
-                            }
-                            }
+                            disabled={flags.isVerified}
+                            value={selectedData.selectedClassCode}
+                            onChange={(e) => {
+                              let selectedClass = formData.classData.filter(
+                                (x) => x.classcode == e.target.value
+                              );
+                              selectedClass = selectedClass[0].class;
+                              setSelectedData((oldData) => {
+                                return {
+                                  ...oldData,
+                                  selectedClassCode: e.target.value,
+                                  selectedClassName: selectedClass,
+                                };
+                              });
+                              let studentFilter = formData.studentData.filter(
+                                (x) => x.Class == selectedClass
+                              );
+                              setFormData((oldData) => {
+                                return {
+                                  ...oldData,
+                                  selectedStudentData: studentFilter,
+                                };
+                              });
+                            }}
                           >
                             <option>Select Class</option>
-                            {standard.map((x) => (
-                              <option key={x.id} value={x.class} class-code={x.classcode}>
-                                {x.class}
-                                {"th standard"}
+                            {formData.classData?.map((data) => (
+                              <option
+                                key={data.classcode}
+                                value={data.classcode}
+                              >
+                                {data.class}
                               </option>
                             ))}
                           </Field>
@@ -192,14 +356,25 @@ const FeeCollection = () => {
                           <Field
                             className="form-control"
                             as="select"
-                            name="username"
-                            onChange={findUserHandler}
-                            value={dataShow.username}
+                            name="name"
+                            disabled={flags.isVerified}
+                            value={selectedData.selectedUsername}
+                            onChange={(e) => {
+                              setSelectedData((oldData) => {
+                                return {
+                                  ...oldData,
+                                  selectedUsername: e.target.value,
+                                };
+                              });
+                              findUserHandler(e.target.value);
+                            }}
                           >
                             <option>Select Name</option>
 
-                            {filterData?.map((x) => (
-                              <option value={x.username}>{x.username}</option>
+                            {formData.selectedStudentData?.map((data) => (
+                              <option key={data.userName} value={data.userName}>
+                                {data.name}
+                              </option>
                             ))}
                           </Field>
                         </div>
@@ -213,119 +388,238 @@ const FeeCollection = () => {
         </Formik>
       )}
 
-      <div className="row w-100 pt-3 customtbl">
-        {dataReceived && details && (
-          <div>
-            <h3>Student details</h3>
+      {!flags.loading && (
+        <div className="row w-100 pt-3 customtbl">
+          {flags.classDataReceived &&
+            flags.studentDataReceived &&
+            flags.studentDetailsReceived && (
+              <div>
+                <div className="detail">
+                  <h3>Student details</h3>
 
-            <table className="cstm-tbl my-4">
-              <tbody>
-                <tr>
-                  <td>User Name </td>
-                  <td>{details.username}</td>
-                </tr>
-                <tr>
-                  <td>Class Code </td>
-                  <td>{data.classcode}</td>
-                </tr>
-                <tr>
-                  <td>Roll No. </td>
-                  <td>{details.rollNumber}</td>
-                </tr>
-                <tr className="flex">
-                  <td>Email </td>
-                  <td>{details.email}</td>
-                </tr>
-                <tr className="flex">
-                  <td>Mobile Number</td>
-                  <td>{details.MobileNumber}</td>
-                </tr>
-                <tr className="flex">
-                  <td>Father Name</td>
-                  <td>{details.Fathername}</td>
-                </tr>
-                <tr className="flex">
-                  <td>Mother Name</td>
-                  <td>{details.Mothername}</td>
-                </tr>
-                <tr className="flex">
-                  <td>Parent Number</td>
-                  <td>{details.parentnumber}</td>
-                </tr>
-              </tbody>
-            </table>
-
-            {/* <div className="text-center mt-3 ">
-              {" "}
-              <button className="btn btn-dark" disabled={!gotStudent}>
-                Verify
-              </button>
-            </div> */}
-          </div>
-        )}
-      </div>
-      <div className="transaction">
-        <div className="row w-100 pt-6 customtbl">
-          {dataReceived && details && (
-            <Formik initialValues={data} onSubmit={handleSubmit}>
-              <Form>
-                <div className="student-form">
-                  <div className="container p-0 m-0 ">
-                    <div className="row">
-                      <div className="col-lg-3">
-                        <div className="fixed-left"></div>
+                  <div className="cstm-tbll my-4">
+                    <div className="d-flex justify-content-between">
+                      <div className="d-flex">
+                        <p>User Name -</p>
+                        <p className="deet">{formData.studentDetails?.name}</p>
                       </div>
-                      <div className="col-lg-9 ">
-                        <div className="row mt-2">
-                          <div className="col-sm-12">
-                            <div className="topmg">
-                              <h3 className="page-title">Transaction</h3>
-                            </div>
-                          </div>
-                          <div className="col-sm-12"></div>
+                      <div className="d-flex">
+                        <p>Class Code -</p>
+                        <p className="deet">{selectedData.selectedClassCode}</p>
+                      </div>
+                    </div>
 
-                          <div className="col-sm-6 xs-12  mt-3">
-                            <div className="form-group">
-                              <Field
-                                name="fee"
-                                as="select"
-                                className="form-control"
-                                placeholder="select Type"
+                    <div className="d-flex justify-content-between">
+                      <div className="d-flex">
+                        <p>Email</p>
+                        <p className="deet">{formData.studentDetails?.email}</p>
+                      </div>
+                      <div className="d-flex">
+                        <p>Mobile No. - </p>
+                        <p className="deet">
+                          {formData.studentDetails?.MobileNumber}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="d-flex justify-content-between">
+                      <div className="d-flex">
+                        <p>Father Name - </p>
+                        <p className="deet">
+                          {formData.studentDetails?.Fathername}
+                        </p>
+                      </div>
+                      <div className="d-flex">
+                        <p>Mother Name - </p>
+                        <p className="deet">
+                          {formData.studentDetails?.Mothername}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-center mt-3 ">
+                    {" "}
+                    <button
+                      className="btn btn-dark"
+                      disabled={flags.isVerified}
+                      onClick={handleverify}
+                    >
+                      Verify
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+        </div>
+      )}
+
+      {!flags.loading && flags.isVerified ? (
+        <div>
+          <div className="row w-100 pt-6 customtbl">
+            <Formik initialValues={formData} onSubmit={handleTxnSubmit}  >
+              <Form>
+                <div className="transaction">
+                  <div className="student-form">
+                    <div className="container p-0 m-0 ">
+                      <div className="row">
+                        <div className="col-lg-3">
+                          <div className="fixed-left"></div>
+                        </div>
+                        <div className="col-lg-9 txn">
+                          <div className="row mt-2">
+                            <div className="col-sm-12">
+                              <div className="topmg">
+                                <h3 className="page-title">Transaction</h3>
+                              </div>
+                            </div>
+                            <div className="col-sm-12"></div>
+
+                            <div className="col-sm-6 xs-12  mt-3">
+                              <div className="form-group">
+                                <Field
+                                  name="fee"
+                                  as="select"
+                                  className="form-control"
+                                  placeholder="select Type"
+                                  value={selectedData.selectedFeeType}
+                                  onChange={(e) =>
+                                    setSelectedData((oldData) => {
+                                      return {
+                                        ...oldData,
+                                        selectedFeeType: e.target.value,
+                                      };
+                                    })
+                                  }
+                                >
+                                  <option>Fee Type</option>
+                                  <option
+                                    value="admissionfee"
+                                    disabled={formData.feeData.admissionfee}
+                                  >
+                                    Admission Fee
+                                  </option>
+                                  <option
+                                    value="monthlyfee"
+                                    disabled={flags.monthlyDisabled}
+                                  >
+                                    Monthly Fee
+                                  </option>
+                                </Field>
+                              </div>
+                            </div>
+
+                            <div className="col-sm-6 xs-12  mt-3">
+                              <div className="form-group">
+                                <Field
+                                  className="form-control"
+                                  type="number"
+                                  name="feeamt"
+                                  value={
+                                    selectedData.selectedFeeType == "monthlyfee"
+                                      ? formData.feeData.pendingfee
+                                      : selectedData.selectedFeeType ==
+                                        "admissionfee"
+                                      ? formData.selectedClassData[0]
+                                          .admissionfee
+                                      : ""
+                                  }
+                                  readonly={true}
+                                  disabled={
+                                    selectedData.selectedFeeType ==
+                                    "admissionfee"
+                                      ? true
+                                      : false
+                                  }
+                                  onChange={(e) =>
+                                    selectedData.selectedFeeType == "monthlyfee"
+                                      ? setFormData((oldData) => {
+                                          return {
+                                            ...oldData,
+                                            feeData: {
+                                              pendingfee: e.target.value,
+                                            },
+                                          };
+                                        })
+                                      : null
+                                  }
+                              
+                                ></Field>
+                              </div>
+                            </div>
+                           
+
+                            {!flags.firstTimeFeePayment && <div className="col-sm-6 xs-12  mt-3">
+                              <div className="form-group">
+                                <label htmlFor=""></label>
+                                <Field
+                                  className="form-control"
+                                  type="text"
+                                  name="month"
+                                  as="select"
+                                  placeholder="select Month"
+                                >
+                                  <option>Select Month</option>
+                                  <option value="Jan">January</option>
+                                  <option value="feb">February</option>
+                                  <option value="march">March</option>
+                                  <option value="april">April,</option>
+                                  <option value="may">May</option>
+                                  <option value="june">May</option>
+                                  <option value="july">july</option>
+                                  <option value="aug">August</option>
+                                  <option value="sep">September</option>
+                                  <option value="oct">October</option>
+                                  <option value="nov">November</option>
+                                  <option value="dec">December</option>
+                                </Field>
+                              </div>
+                            </div>}
+                            <div className="col-xs-12  mt-3">
+                              <button
+                                className="btn btn-dark text-center mb-4 mt-3 "
+                                type="submit"
+                                disabled={
+                                  (selectedData.selectedFeeType ===
+                                    "admissionfee" &&
+                                    formData.feeData.admissionfee) ||
+                                  (selectedData.selectedFeeType ===
+                                    "monthlyfee" &&
+                                  formData.feeData.monthlyfee == "true"
+                                    ? true
+                                    : false)
+                                } 
+                                onClick={handleTxnSubmit}
+                            
+
+                        
                               >
-                                <option>Fee Type</option>
-                                <option value={data.admissionfee}>
-                                  Admission Fee
-                                </option>
-                                <option value={data.monthlyfee}>
-                                  Monthly Fee
-                                </option>
-                                <option>Pending Fee</option>
-                              </Field>
+                                Mark as Paid
+                              </button>
                             </div>
-                          </div>
+                              {formData.transactionData.length > 0 && <div className="detaill">
+                                      <div className="cstm-tbll my-4" ref={ref}>
+                                        <div className="mb-5">
+                                          <h3>Transaction History -</h3>
+                                        </div>
+                                        <div className="ctm-row d-flex justify-content-between">
+                                          <p className="fw-bold">Fee Type</p>
+                                          <p className="fw-bold">Amount</p>
+                                          <p className="fw-bold">Date</p>
+                                        </div>
+                                        {formData.transactionData?.map((x) => (
+                                          <div className="ctm-row d-flex justify-content-between">
+                                            <p>{x.feeType.toUpperCase()}</p>
+                                            <p>{x.feeAmount}</p>
+                                            <p>
+                                              {new Date(
+                                                x.timestamp.seconds * 1000
+                                              ).toLocaleDateString()}
+                                            </p>
+                                          </div>
+                                        ))}
+                                    </div>
+                                  </div>}
 
-                          <div className="col-sm-6 xs-12  mt-3">
-                            <div className="form-group">
-                              <Field
-                                className="form-control"
-                                type="number"
-                                name="fee"
-                              ></Field>
-                            </div>
-                          </div>
-                          <div className="col-xs-12  mt-3">
-                            <button
-                              className="btn btn-dark text-center mb-4 mt-3 "
-                              type="submit"
-                            >
-                              Submit
-                            </button>
-                          </div>
-                          <div>
-                            <ul>
-                              <li>Admission Fee - {classDetails.admissionfee}</li>
-                              <li>Monthly Fee - {classDetails.monthlyfee}</li>
-                            </ul>
+                          
                           </div>
                         </div>
                       </div>
@@ -334,9 +628,9 @@ const FeeCollection = () => {
                 </div>
               </Form>
             </Formik>
-          )}
+          </div>
         </div>
-      </div>
+      ) : null}
     </>
   );
 };

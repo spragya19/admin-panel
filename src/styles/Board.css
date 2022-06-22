@@ -3,7 +3,7 @@ main {
     grid-area: main;
     overflow-y: auto;
     margin-left: 16%;
-    margin-top: 4rem;
+   
     width:100%
 }
 

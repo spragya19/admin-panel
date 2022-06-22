@@ -1,4 +1,4 @@
-import { Field, Formik, Form } from "formik";
+import { Field, Formik, Form, ErrorMessage } from "formik";
 import firebaseConfig from "../firebase/firebaseConfig";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -9,6 +9,9 @@ import {
 } from "firebase/auth";
 import { useDispatch, useSelector } from "react-redux";
 import { logSliceActions } from "../Redux/Actions";
+import { toast } from "react-toastify";
+import * as Yup from "yup";
+
 
 function Login() {
   const authentication = getAuth();
@@ -30,19 +33,29 @@ function Login() {
             "refreshToken",
             data._tokenResponse.refreshToken
           );
-
+          toast("Logged in successfully!");
           navigate("/dashboard/board");
         } else {
-          alert("Cannot send login request to database");
+          toast("Cannot send login request to database");
         }
       })
       .catch((err) => {
         console.log("Some Error Occured - ", err);
-        alert("Wrong Credentials / User doesn't exist");
+        toast("Wrong Credentials / User doesn't exist");
       });
   };
+  const validate = Yup.object({
+   
+    email: Yup.string()
+      .email("Email is invalid")
+      .required(" Email is Required"),
+
+    password: Yup.string()
+      .min(6, "password must be at least 6 char")
+      .required("Required"),
+  })
   return (
-    <Formik initialValues={data} onSubmit={handleSubmit}>
+    <Formik initialValues={data} onSubmit={handleSubmit} validationSchema={validate}>
       {() => (
         <section className="vh-100" style={{ backgroundColor: "#eee" }}>
           <div className="container h-100">
@@ -66,6 +79,9 @@ function Login() {
                                 name="email"
                                 placeholder="email"
                               />
+                               <span className="text-danger">
+                               <ErrorMessage name="email" />
+                               </span>
                             </div>
                           </div>
                           <div className="d-flex flex-row align-items-center mb-4">
@@ -77,15 +93,13 @@ function Login() {
                                 placeholder="password"
                                 name="password"
                               />
+
+                               <span className="text-danger">
+                               <ErrorMessage name="password" />
+                               </span>
                             </div>
                           </div>
-                          <div className="d-flex flex-row align-items-center mb-4"></div>
-                          <div className="form-check d-flex justify-content-center mb-5">
-                            <p className="forgot-password text-right">
-                              Don't have an account{" "}
-                              <Link to="/Signup">Signup</Link>
-                            </p>
-                          </div>
+                         
                           <div className="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
                             <button
                               type="submit"
