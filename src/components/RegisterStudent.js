@@ -17,6 +17,22 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 import { useEffect } from "react";
+import { AiOutlineUnorderedList } from "react-icons/ai";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Grid,
+  ListItem,
+  ListItemText,
+  makeStyles,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from "@material-ui/core";
 
 const RegisterStudent = () => {
   const navigate = useNavigate();
@@ -24,26 +40,26 @@ const RegisterStudent = () => {
     name: "",
     Class: "",
     rollNumber: "",
-   
-
+    session: "",
+    timestamp: "",
   });
 
   const [gotStudent, setGotStudent] = useState(false);
   const [details, setDetails] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [state, setState] = useState([]);
 
   const adddata = async (data) => {
-   
-   
-  console.log(data);
+    debugger;
+    console.log(data);
     await addDoc(collection(db, "student"), {
-   
       name: data.name,
       Class: data.Class,
       rollNumber: data.rollNumber,
       userName: data.userName,
       monthlyFeePaid: "false",
       admissionFeePaid: "false",
+      timestamp: serverTimestamp(),
     })
       .then((res) => {
         toast("Added Successfully!!");
@@ -56,6 +72,23 @@ const RegisterStudent = () => {
         setLoading(false);
       });
   };
+
+  useEffect(() => {
+    console.log(">>>>>>useEffect1");
+    (async () => {
+      try {
+        const q3 = await getDocs(collection(db, "student"));
+        const add = [];
+        q3.forEach((doc) => {
+          return add.push({ ...doc.data(), id: doc.id });
+        });
+
+        setState(add);
+      } catch (err) {
+        console.log(">>>>Err", err);
+      }
+    })();
+  }, []);
 
   const [standard, setStandard] = useState([]);
   const [dataShow, setData] = useState([]);
@@ -118,15 +151,16 @@ const RegisterStudent = () => {
 
       adddata(datacopy);
     } catch {
-      console.log("err");
+      toast.error("error");
       setLoading(false);
     }
   };
-
+ 
   //detail show
   const classsHandler = async (e) => {
     if (e.target.value === "") {
       setCheckOptionValue(false);
+      setGotStudent(false);
     } else {
       setCheckOptionValue(e.target.value);
     }
@@ -147,21 +181,27 @@ const RegisterStudent = () => {
 
   return (
     <>
-      {loading && <Spinner />}
+       {loading && <Spinner />}
       {!loading && dataReceived && (
         <Formik initialValues={data} onSubmit={handleSubmit}>
+           
           <Form>
+       
             <div className="student-form">
               <div className="container p-0 m-0 ">
                 <div className="row">
-                  <div className="col-lg-3">
-                    <div className="fixed-left"></div>
-                  </div>
                   <div className="col-lg-9">
                     <div className="row mt-2 mx-2">
                       <div className="col-sm-12">
                         <div className="topmg">
                           <h3 className="page-title">Register Student</h3>
+
+                          <Link to={`/dashboard/StudentList`}>
+                            <button type="button" className="btn btn-primary">
+                              {" "}
+                              {<AiOutlineUnorderedList />}List
+                            </button>
+                          </Link>
                         </div>
                       </div>
 
@@ -203,7 +243,13 @@ const RegisterStudent = () => {
                               dataShow &&
                               dataShow.length > 0 &&
                               dataShow.map((x) => (
-                                <option value={x.name}>{x.name}</option>
+                                <option
+                                  disabled={state.some(
+                                    (item) => item.name == x.name
+                                  )}
+                                >
+                                  {x.name}
+                                </option>
                               ))}
                           </Field>
                         </div>
@@ -217,9 +263,7 @@ const RegisterStudent = () => {
                             name="session"
                             as="select"
                             label=" select session"
-                            
                           >
-                           
                             <option value="April, 2019 - March, 2020">
                               April, 2019 - March, 2020
                             </option>
@@ -246,50 +290,44 @@ const RegisterStudent = () => {
           </Form>
         </Formik>
       )}
-      <div className="row w-100 pt-3 customtbl">
+      <div className="row w-100 pt-3 mt customtbl">
         {!loading && dataReceived && details && (
-          <div>
-          <div className="detail">
-            
-            <h3>Student details</h3>
+          <>
+            <div className="reg-detail">
+              <CardContent>
+                <CardHeader title="Student Details" />
+                <Grid container spacing={2}>
+                  <Grid item md={6} xs={12}>
+                    <ListItem>
+                      <ListItemText>First Name:-</ListItemText>
+                      <ListItemText> {details.name} </ListItemText>
+                    </ListItem>
 
-            <div className="cstm-tbll my-4">
-              <div className="d-flex justify-content-between">
-                <div className="d-flex">
-                  <p>User Name- </p>
-                  <p className="deet">{details.name}</p>
-                </div>
-                <div className="d-flex">
-                <div className="d-flex">
-                  <p>Email- </p>
-                  <p className="deet">{details?.email}</p>
-                </div>
-                </div>
-              </div>
-
-              <div className="d-flex justify-content-between">
-              <div className="d-flex">
-                  <p>Parent No. </p>
-                  <p className="deet">{details?.parentnumber}</p>
-                </div>
-                
-                <div className="d-flex">
-                  <p>Mobile No.- </p>
-                  <p className="deet">{details?.MobileNumber}</p>
-                </div>
-              </div>
-
-              <div className="d-flex justify-content-between">
-                <div className="d-flex">
-                  <p>Father Name- </p>
-                  <p className="deet">{details?.Fathername}</p>
-                </div>
-                <div className="d-flex">
-                  <p>Mother Name- </p>
-                  <p className="deet">{details?.Mothername}</p>
-                </div>
-              </div>
-            </div>
+                    <ListItem>
+                      <ListItemText>Parent No.:-</ListItemText>
+                      <ListItemText>{details?.parentnumber} </ListItemText>
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText>Mobile No.:- </ListItemText>
+                      <ListItemText>{details?.MobileNumber} </ListItemText>
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText>Email:-</ListItemText>
+                      <ListItemText> {details?.email} </ListItemText>
+                    </ListItem>
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <ListItem>
+                      <ListItemText>Father's Name:-</ListItemText>
+                      <ListItemText> {details?.Fathername} </ListItemText>
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText>Mother's Name:-</ListItemText>
+                      <ListItemText>{details?.Mothername}</ListItemText>
+                    </ListItem>
+                  </Grid>
+                </Grid>
+              </CardContent>
             </div>
             <div className="flex justify-center items-center mb-5">
               <button
@@ -301,7 +339,7 @@ const RegisterStudent = () => {
                 Verify &amp; submit
               </button>
             </div>
-          </div>
+          </>
         )}
       </div>
     </>

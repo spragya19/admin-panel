@@ -7,13 +7,15 @@ import logout from "../assets/logout.png";
 import { logSliceActions } from "../Redux/Actions";
 import { useDispatch } from "react-redux";
 import Swal from "sweetalert2";
-
+import { BiHome } from "react-icons/bi";
+import { AiOutlineUserAdd, AiOutlineFolderAdd } from "react-icons/ai";
+import { BsPeople } from "react-icons/bs";
+import { FaRegMoneyBillAlt } from "react-icons/fa";
+import { MdMoney } from "react-icons/md";
+import { ErrorMessage } from "formik";
 function Sidebar() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-
-  
 
   const logoutHandler = () => {
     Swal.fire({
@@ -29,58 +31,63 @@ function Sidebar() {
         dispatch(logSliceActions.logout());
         localStorage.clear();
         navigate("/");
-        
+
         Swal.fire("Logged Out Sucessfully");
       }
     });
-  }
+  };
 
   return (
-    <div>
-      <input type="checkbox" className="openSidebarMenu" id="openSidebarMenu" />
-      <label
-        htmlFor="openSidebarMenu"
-        className="sidebarIconToggle"
-      ></label>{" "}
-      <div id="sidebarMenu">
+ 
+      <div id="sidebarMenu"  >
         <ul className="sidebarMenuInner">
           <li>
             <img src={sch} className="logo" />
           </li>{" "}
           <li>
-            <Link to="/dashboard/board"> Dashboard </Link>{" "}
-            <span> Admin Panel </span>{" "}
+            <Link to="/dashboard/board">{<BiHome />} Dashboard </Link>{" "}
           </li>{" "}
           <li>
-            <Link to="/dashboard/RegisterUser"> Register User </Link>{" "}
+            <Link to="/dashboard/RegisterUser">
+              {" "}
+              {<AiOutlineUserAdd />} Register User{" "}
+            </Link>{" "}
           </li>{" "}
           <li>
-            <Link to="/dashboard/register-stud"> Register Student </Link>{" "}
-          </li>
-          <li>
-            <Link to="/dashboard/Course"> Register Class </Link>{" "}
+            <Link to="/dashboard/Course">
+              {" "}
+              {<AiOutlineFolderAdd />} Register Class{" "}
+            </Link>{" "}
           </li>{" "}
           <li>
+            <Link to="/dashboard/register-stud">
+              {<BsPeople />} Register Student{" "}
+            </Link>{" "}
+          </li>{" "}
+          {/* <li>
             <Link to="/dashboard/StudentList"> Student </Link>{" "}
+          </li>{" "} */}
+          <li>
+            <Link to="/dashboard/FeeCollection">
+              {" "}
+              {<FaRegMoneyBillAlt />} Pay Fee{" "}
+            </Link>{" "}
           </li>{" "}
           <li>
-            <Link to="/dashboard/FeeCollection"> Pay Fee </Link>{" "}
+            <Link to="/dashboard/Transactions">
+              {" "}
+              {<MdMoney />} Transaction{" "}
+            </Link>{" "}
           </li>{" "}
           <li>
-            <Link to="/dashboard/Transactions"> Transaction </Link>{" "}
-          </li>{" "}
-          <li>
-          <img src={logout} className="logout" />
+            <img src={logout} className="logout" />
             <button className="log" onClick={logoutHandler}>
               LogOut{" "}
             </button>{" "}
           </li>{" "}
         </ul>{" "}
-      </div>{" "}
-      <div id="center" className="main center">
-        {" "}
-      </div>{" "}
-    </div>
+      </div>
+    
   );
 }
 

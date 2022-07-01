@@ -3,12 +3,18 @@
     width: 90vw;
    
 }
+.student{
+    margin-top: 2rem;
+    width: 90vw;
+    margin-left: 65rem;
+   
+}
 .tb{
     margin-left: 3rem;
 }
 
 .customtbl {
-    margin-left: -68vw!important;
+    margin-right: -89vw!important;
 }
 
 .cstm-tbl {
@@ -30,11 +36,14 @@
     margin-top: 5rem;
 
 }
-.detail{
-   
+.reg-detail{
+    margin-top: 25rem !important;
     border: 1px solid black;
-    padding: 10%;
-    width: 650px;
+    padding: 5%;
+    margin-left: -21%;
+    width: 700px !important;
+    height: 430px !important;
+   
    
 
    

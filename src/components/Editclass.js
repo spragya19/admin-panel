@@ -1,8 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Field, Formik, Form, ErrorMessage } from "formik";
 import { useState } from "react";
 import firebase from "firebase/compat/app";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  serverTimestamp,
+  getDoc,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 import { async } from "@firebase/util";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -11,8 +18,6 @@ import { addMethod } from "yup";
 import Spinner from "./Spinner";
 import { toast } from "react-toastify";
 import * as Yup from "yup";
-import {AiOutlineUnorderedList} from "react-icons/ai"
-
 
 const role = [
   { name: "Select" },
@@ -26,65 +31,47 @@ const role = [
   { name: "PR008", value: "PR008" },
   { name: "PR009", value: "PR009" },
   { name: "PR010", value: "PR010" },
-  { name: "PR011", value: "PR011" },
-  { name: "PR012", value: "PR012" },
 ];
 
-const Course = () => {
-const paarm=  useParams();
-console.log(paarm)
+const Editclass = () => {
+  const params = useParams();
   const [loading, setLoading] = useState(false);
-  const [data, setdata] = useState({
-    class: "",
-    admissionfee: "",
-    monthlyfee: "",
-    classcode: "",
-    timestamp: "",
-  });
+  const [data, setData] = useState({});
   const navigate = useNavigate();
 
-  //Data store firebase
-  const adddata = async (data) => {
-    try {
-      const docRef = await addDoc(collection(db, "classes"), {
-        class: data.class,
-        admissionfee: data.admissionfee,
-        monthlyfee: data.monthlyfee,
-        classcode: data.classcode,
-        timestamp: serverTimestamp(),
-      });
-      toast("Added Successfully!!");
-      setLoading(false);
-      console.log("Document bID", docRef.id);
-    } catch (e) {
-      console.error("Error adding Details:", e);
-      toast("Some Error Occurred!!");
-      setLoading(false);
-    }
+  const handleChange = (name) => (event) => {
+    //console.log(event.target.value);
+    setData({ ...data, [name]: event.target.value });
   };
 
-  const handleSubmit = (data) => {
-    adddata(data);
+  const classref = doc(db, "classes", params.id);
+
+  useEffect(() => {
+    const fetchStudent = async () => {
+      try {
+        const docSnap = await getDoc(classref);
+        setData(docSnap.data());
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    console.log("update");
+    fetchStudent();
+  }, []);
+
+  const handleSubmit = async () => {
+    await updateDoc(doc(db, "classes", params.id), data);
+    toast("Class Updated");
     console.log(data);
     setLoading(false);
     navigate("/dashboard/ClassList");
   };
-  const validate = Yup.object({
-    class: Yup.string().required("Required"),
-    admissionfee: Yup.string().required("Required"),
-    monthlyfee: Yup.string().required(" Required"),
-    classcode: Yup.string().required(" Required"),
-  });
 
   return (
     <>
       {loading && <Spinner />}
       {!loading && (
-        <Formik
-          initialValues={data}
-          onSubmit={handleSubmit}
-          validationSchema={validate}
-        >
+        <Formik initialValues={data} onSubmit={handleSubmit}>
           <Form>
             <div className="c-form">
               <div className="container p-0 m-0 ">
@@ -96,11 +83,13 @@ console.log(paarm)
                     <div className="row mt-2">
                       <div className="col-sm-12">
                         <div className="topmg">
-                          <h3 className="page-title">Register Class</h3>
-                        
-                              
-                              <Link to={`/dashboard/ClassList`}><button type="button" className="btn btn-primary">{<AiOutlineUnorderedList />}List</button></Link>
-                            
+                          <h3 className="page-title">Edit Class</h3>
+                          <ul className="breadcrumb">
+                            <li className="breadcrumb-item">
+                              {" "}
+                              <Link to={`/dashboard/ClassList`}> List</Link>
+                            </li>
+                          </ul>
                         </div>
                       </div>
                       <div className="col-sm-6 xs-12  mt-3">
@@ -110,6 +99,8 @@ console.log(paarm)
                             className="form-control"
                             type="text"
                             name="class"
+                            value={data.class}
+                            onChange={handleChange("class")}
                           />
                           <span className="text-danger">
                             <ErrorMessage name="class" />
@@ -123,12 +114,13 @@ console.log(paarm)
                           <Field
                             as="select"
                             className="form-control"
-                            type="text"
                             name="classcode"
                             placeholder="select"
+                            value={data.classcode}
+                            onChange={handleChange("classcode")}
                           >
-                            {role.map(({ name, value }) => (
-                              <option key={value} value={value}>
+                            {role.map(({ name, value, index }) => (
+                              <option key={index} value={value}>
                                 {name}
                               </option>
                             ))}
@@ -144,6 +136,8 @@ console.log(paarm)
                             className="form-control"
                             type="number"
                             name="monthlyfee"
+                            value={data.monthlyfee}
+                            onChange={handleChange("monthlyfee")}
                           />
                           <span className="text-danger">
                             <ErrorMessage name="monthlyfee" />
@@ -158,6 +152,8 @@ console.log(paarm)
                             className="form-control"
                             type="number"
                             name="admissionfee"
+                            value={data.admissionfee}
+                            onChange={handleChange("admissionfee")}
                           />
                           <span className="text-danger">
                             <ErrorMessage name="admissionfee" />
@@ -170,7 +166,7 @@ console.log(paarm)
                           className="btn btn-dark text-center mb-4 mt-3 "
                           type="submit"
                         >
-                          Submit
+                          Update
                         </button>
                       </div>
                     </div>
@@ -185,4 +181,4 @@ console.log(paarm)
   );
 };
 
-export default Course;
+export default Editclass;

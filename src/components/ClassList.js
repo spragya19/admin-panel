@@ -12,7 +12,7 @@ import { MdDelete, MdEdit } from "react-icons/md";
 import Swal from "sweetalert2";
 import { CSVLink, CSVDownload } from "react-csv";
 import { paths } from "../Routing/paths";
-
+import {AiOutlineDownload} from "react-icons/ai";
 
 const ClassList = () => {
   const [dataShow, setData] = useState([]);
@@ -36,7 +36,6 @@ const ClassList = () => {
     { label: "Class Code", key: "classcode" },
     { label: "Monthly Fee", key: "monthlyfee" },
     { label: "Admission Fee", key: "admissionfee" },
-  
   ];
   const actionDelete = async (id) => {
     Swal.fire({
@@ -59,18 +58,6 @@ const ClassList = () => {
       }
     });
   };
-  // function ClassData() {
-  //   const custs = [];
-  //   for (let i = 0; i <= 25; i++) {
-  //     custs[i] = {
-  //     class: 'class',
-  //       classcode: 'classcode',
-  //      admissionFee: 'admissionFee'
-  //     monthlyFee:
-  //     };
-  //   }
-  //   return custs;
-  // }
 
   useEffect(() => {
     (async () => {
@@ -119,13 +106,12 @@ const ClassList = () => {
       name: "Actions",
       selector: (row) => (
         <div>
-         
-
-          {/* <button onClick={() => actionEdit(row?.id)}>{<MdEdit />}</button>{" "} */}
+          <button>
+            <Link to={`/dashboard/Editclass/${row.id}`}>{<MdEdit />}</Link>
+          </button>{" "}
           <button onClick={() => actionDelete(row?.id)}>{<MdDelete />}</button>
         </div>
       ),
-      
     },
   ];
 
@@ -146,27 +132,30 @@ const ClassList = () => {
                       className="d-flex align-items-center justify-content-between"
                     >
                       <h3 className="page-title">Class</h3>
-                     
-                        <CSVLink data={dataShow} className="text-dark "  filename="classes.csv"  headers={headers}>
-                        <Button className="btn btn-primary btn-block "> Export CSV </Button>
-                        </CSVLink>
-                     {" "}
+                      <CSVLink
+                        data={dataShow}
+                        className="text-dark "
+                        filename="classes.csv"
+                        headers={headers}
+                      >
+                        <Button variant="contained" color="primary" className="btn btn-primary btn-block ">
+                          {" "}
+                          {<AiOutlineDownload />}
+                          Export CSV{" "}
+                        </Button>
+                      </CSVLink>{" "}
                     </Col>
-                    <Col className="col">
-                      <ul className="breadcrumb">
-                        <li className="breadcrumb-item">Dashboard</li>
-                      </ul>
-                    </Col>
+                    
                   </Row>
 
-                  <div class="input-group mb-2">
-                    <div class="form-outline">
+                  <div className="input-group mb-2">
+                    <div className="form-outline">
                       <input
                         type="search"
                         onChange={(e) => {
                           setSearch(e.target.value);
                         }}
-                        class="form-control"
+                        className="form-control"
                         placeholder="Search Class"
                       />
                     </div>

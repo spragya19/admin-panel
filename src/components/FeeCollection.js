@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Field, Formik, Form, ErrorMessage } from "formik";
 import "../styles/FeeCollection.css";
 import { db } from "../firebase/firebaseConfig";
-import { useLocation, useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { addDoc } from "firebase/firestore";
 import {
   doc,
@@ -15,12 +15,23 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import Spinner from "./Spinner";
-import { getFirestore, getDocs } from "firebase/firestore";
-import firebase from "firebase/app";
+import { getDocs } from "firebase/firestore";
 import { toast } from "react-toastify";
-import ReactToPdf from "react-to-pdf";
-
-
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Grid,
+  ListItem,
+  ListItemText,
+  makeStyles,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from "@material-ui/core";
 
 const FeeCollection = () => {
   const [flags, setFlags] = useState({
@@ -32,11 +43,7 @@ const FeeCollection = () => {
     firstTimeFeePayment: false,
     monthlyDisabled: false,
     month: false,
-  
   });
-
-  
-  
 
   const [selectedData, setSelectedData] = useState({
     selectedUsername: null,
@@ -71,14 +78,12 @@ const FeeCollection = () => {
       let qry = null;
       let stuDB = collection(db, "student");
       let stuList = [];
-
       qry = query(stuDB);
       const stuSnap = await getDocs(qry);
       stuSnap.forEach((doc) => stuList.push(doc.data()));
       setFlags((oldData) => {
         return { ...oldData, studentDataReceived: true };
       });
-
       let classList = [];
       let classDB = collection(db, "classes");
       qry = query(classDB, orderBy("timestamp"));
@@ -108,7 +113,6 @@ const FeeCollection = () => {
       const stuSnap = await getDocs(student);
       let stuId = null;
       stuSnap.forEach((doc) => (stuId = doc.id));
-
       const updateRef = doc(db, "student", stuId);
 
       if (formData.feeType == "monthlyfee") {
@@ -120,9 +124,6 @@ const FeeCollection = () => {
           admissionFeePaid: formData.feeAmount.toString(),
         });
       }
-
-      
-
       toast("Fee paid successfully!");
       navigate("/dashboard/Transactions");
     } catch (e) {
@@ -130,7 +131,6 @@ const FeeCollection = () => {
       toast("Some error occured!");
     }
   };
-
   const handleverify = async () => {
     setFlags((oldData) => {
       return { ...oldData, isVerified: true };
@@ -144,18 +144,17 @@ const FeeCollection = () => {
     const txnSnap = await getDocs(tx);
     let userData = [];
     txnSnap.forEach((doc) => {
-      userData.push( {transId: doc.id, ...doc.data() });
+      userData.push({ transId: doc.id, ...doc.data() });
     });
-
-    setFormData(oldData => {
-      return {...oldData, transactionData: userData};
-    })
+    setFormData((oldData) => {
+      return { ...oldData, transactionData: userData };
+    });
 
     if (userData.length <= 0) {
       setFormData((oldData) => {
         return {
           ...oldData,
-        
+
           feeData: {
             monthlyfee: 0,
             pendingfee: formData.selectedClassData[0].monthlyfee,
@@ -237,23 +236,18 @@ const FeeCollection = () => {
     });
   };
 
-  const [txnData, setTxnData] = useState({
-    userName:"",
-    class: '',
-    rollNumber:""
-  });
-
   const ref = React.createRef();
   const options = {
-    orientation: 'landscape',
-};
+    orientation: "landscape",
+  };
 
   const handleTxnSubmit = async () => {
- 
     setFlags((oldData) => {
       return { ...oldData, loading: true };
     });
+
     
+
     let stuData = null;
     if (selectedData.selectedFeeType == "monthlyfee") {
       stuData = {
@@ -283,7 +277,7 @@ const FeeCollection = () => {
   };
 
   return (
-    <>
+    <div className="fee-form">
       {flags.loading && <Spinner />}
       {!flags.loading && flags.classDataReceived && flags.studentDataReceived && (
         <Formik initialValues={formData}>
@@ -291,9 +285,6 @@ const FeeCollection = () => {
             <div className="student-form">
               <div className="container p-0 m-0 ">
                 <div className="row">
-                  <div className="col-lg-3">
-                    <div className="fixed-left"></div>
-                  </div>
                   <div className="col-lg-9 ">
                     <div className="row mt-2 mx-2">
                       <div className="col-sm-12">
@@ -393,49 +384,54 @@ const FeeCollection = () => {
           {flags.classDataReceived &&
             flags.studentDataReceived &&
             flags.studentDetailsReceived && (
-              <div>
-                <div className="detail">
-                  <h3>Student details</h3>
-
-                  <div className="cstm-tbll my-4">
-                    <div className="d-flex justify-content-between">
-                      <div className="d-flex">
-                        <p>User Name -</p>
-                        <p className="deet">{formData.studentDetails?.name}</p>
-                      </div>
-                      <div className="d-flex">
-                        <p>Class Code -</p>
-                        <p className="deet">{selectedData.selectedClassCode}</p>
-                      </div>
-                    </div>
-
-                    <div className="d-flex justify-content-between">
-                      <div className="d-flex">
-                        <p>Email</p>
-                        <p className="deet">{formData.studentDetails?.email}</p>
-                      </div>
-                      <div className="d-flex">
-                        <p>Mobile No. - </p>
-                        <p className="deet">
-                          {formData.studentDetails?.MobileNumber}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="d-flex justify-content-between">
-                      <div className="d-flex">
-                        <p>Father Name - </p>
-                        <p className="deet">
-                          {formData.studentDetails?.Fathername}
-                        </p>
-                      </div>
-                      <div className="d-flex">
-                        <p>Mother Name - </p>
-                        <p className="deet">
-                          {formData.studentDetails?.Mothername}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+              <>
+                <div className="fee-detail  ">
+                  <CardContent>
+                    <CardHeader title="Student Details" />
+                    <Grid container spacing={2}>
+                      <Grid item md={6} xs={12}>
+                        <ListItem>
+                          <ListItemText>First Name:-</ListItemText>
+                          <ListItemText>
+                            {formData.studentDetails?.name}
+                          </ListItemText>
+                        </ListItem>
+                        <ListItem>
+                          <ListItemText> class code:- </ListItemText>
+                          <ListItemText>
+                            {selectedData.selectedClassCode}{" "}
+                          </ListItemText>
+                        </ListItem>
+                        <ListItem>
+                          <ListItemText>Mobile No. :- </ListItemText>
+                          <ListItemText>
+                            {formData.studentDetails?.MobileNumber}{" "}
+                          </ListItemText>
+                        </ListItem>
+                        <ListItem>
+                          <ListItemText>Email :- </ListItemText>
+                          <ListItemText>
+                            {formData.studentDetails?.email}{" "}
+                          </ListItemText>
+                        </ListItem>
+                      </Grid>
+                      <Grid item md={6} xs={12}>
+                        <ListItem>
+                          <ListItemText> Father's Name:- </ListItemText>
+                          <ListItemText>
+                            {" "}
+                            {formData.studentDetails?.Fathername}{" "}
+                          </ListItemText>
+                        </ListItem>
+                        <ListItem>
+                          <ListItemText>Mother's Name:- </ListItemText>
+                          <ListItemText>
+                            {formData.studentDetails?.Mothername}
+                          </ListItemText>
+                        </ListItem>
+                      </Grid>
+                    </Grid>
+                  </CardContent>
                   <div className="text-center mt-3 ">
                     {" "}
                     <button
@@ -447,23 +443,21 @@ const FeeCollection = () => {
                     </button>
                   </div>
                 </div>
-              </div>
+              </>
             )}
         </div>
       )}
 
       {!flags.loading && flags.isVerified ? (
-        <div>
+        <>
+          <br />
           <div className="row w-100 pt-6 customtbl">
-            <Formik initialValues={formData} onSubmit={handleTxnSubmit}  >
+            <Formik initialValues={formData} onSubmit={handleTxnSubmit}>
               <Form>
                 <div className="transaction">
-                  <div className="student-form">
+                  <div className="student">
                     <div className="container p-0 m-0 ">
                       <div className="row">
-                        <div className="col-lg-3">
-                          <div className="fixed-left"></div>
-                        </div>
                         <div className="col-lg-9 txn">
                           <div className="row mt-2">
                             <div className="col-sm-12">
@@ -541,38 +535,40 @@ const FeeCollection = () => {
                                         })
                                       : null
                                   }
-                              
                                 ></Field>
                               </div>
                             </div>
-                           
 
-                            {!flags.firstTimeFeePayment && <div className="col-sm-6 xs-12  mt-3">
-                              <div className="form-group">
-                                <label htmlFor=""></label>
-                                <Field
-                                  className="form-control"
-                                  type="text"
-                                  name="month"
-                                  as="select"
-                                  placeholder="select Month"
-                                >
-                                  <option>Select Month</option>
-                                  <option value="Jan">January</option>
-                                  <option value="feb">February</option>
-                                  <option value="march">March</option>
-                                  <option value="april">April,</option>
-                                  <option value="may">May</option>
-                                  <option value="june">May</option>
-                                  <option value="july">july</option>
-                                  <option value="aug">August</option>
-                                  <option value="sep">September</option>
-                                  <option value="oct">October</option>
-                                  <option value="nov">November</option>
-                                  <option value="dec">December</option>
-                                </Field>
+                            {!flags.firstTimeFeePayment && (
+                              <div className="col-sm-6 xs-12  mt-3">
+                                <div className="form-group">
+                                  <label htmlFor=""></label>
+                                  <Field
+                                    className="form-control"
+                                    type="text"
+                                    name="month"
+                                    as="select"
+                                    placeholder="select Month"
+                                    value={selectedData?.month}
+                                    onChange={handleTxnSubmit}
+                                  >
+                                    <option>Select Month</option>
+                                    <option value="Jan">January</option>
+                                    <option value="feb">February</option>
+                                    <option value="march">March</option>
+                                    <option value="april">April,</option>
+                                    <option value="may">May</option>
+                                    <option value="june">May</option>
+                                    <option value="july">july</option>
+                                    <option value="aug">August</option>
+                                    <option value="sep">September</option>
+                                    <option value="oct">October</option>
+                                    <option value="nov">November</option>
+                                    <option value="dec">December</option>
+                                  </Field>
+                                </div>
                               </div>
-                            </div>}
+                            )}
                             <div className="col-xs-12  mt-3">
                               <button
                                 className="btn btn-dark text-center mb-4 mt-3 "
@@ -586,40 +582,37 @@ const FeeCollection = () => {
                                   formData.feeData.monthlyfee == "true"
                                     ? true
                                     : false)
-                                } 
+                                }
                                 onClick={handleTxnSubmit}
-                            
-
-                        
                               >
                                 Mark as Paid
                               </button>
                             </div>
-                              {formData.transactionData.length > 0 && <div className="detaill">
-                                      <div className="cstm-tbll my-4" ref={ref}>
-                                        <div className="mb-5">
-                                          <h3>Transaction History -</h3>
-                                        </div>
-                                        <div className="ctm-row d-flex justify-content-between">
-                                          <p className="fw-bold">Fee Type</p>
-                                          <p className="fw-bold">Amount</p>
-                                          <p className="fw-bold">Date</p>
-                                        </div>
-                                        {formData.transactionData?.map((x) => (
-                                          <div className="ctm-row d-flex justify-content-between">
-                                            <p>{x.feeType.toUpperCase()}</p>
-                                            <p>{x.feeAmount}</p>
-                                            <p>
-                                              {new Date(
-                                                x.timestamp.seconds * 1000
-                                              ).toLocaleDateString()}
-                                            </p>
-                                          </div>
-                                        ))}
+                            {formData.transactionData.length > 0 && (
+                              <div className="detaill">
+                                <div className="cstm-tbll my-4" ref={ref}>
+                                  <div className="mb-5 ml-4">
+                                    <h3>Transaction History -</h3>
+                                  </div>
+                                  <div className="ctm-row d-flex justify-content-between">
+                                    <p className="fw-bold">Fee Type</p>
+                                    <p className="fw-bold">Amount</p>
+                                    <p className="fw-bold">Date</p>
+                                  </div>
+                                  {formData.transactionData?.map((x) => (
+                                    <div className="ctm-row d-flex justify-content-between">
+                                      <p>{x.feeType.toUpperCase()}</p>
+                                      <p>{x.feeAmount}</p>
+                                      <p>
+                                        {new Date(
+                                          x.timestamp.seconds * 1000
+                                        ).toLocaleDateString()}
+                                      </p>
                                     </div>
-                                  </div>}
-
-                          
+                                  ))}
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -629,9 +622,9 @@ const FeeCollection = () => {
               </Form>
             </Formik>
           </div>
-        </div>
+        </>
       ) : null}
-    </>
+    </div>
   );
 };
 

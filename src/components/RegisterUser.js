@@ -45,8 +45,8 @@ const RegisterUser = () => {
     const q = query(collection(db, "users"), where("role", "==", "3"));
     const studentSnapshot = await getDocs(q);
     const studentsLength = String(studentSnapshot.size).padStart(2, 0);
-    // console.log(totalStudents)
-    return "PR" + year + studentsLength ;
+
+    return "PR" + year + studentsLength;
   };
 
   //authentication
@@ -92,8 +92,8 @@ const RegisterUser = () => {
     setLoading(false);
     navigate("/dashboard/register-stud");
   };
-  const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
-
+  const phoneRegExp =
+    /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
   const validate = Yup.object({
     role: Yup.string().required("Required"),
@@ -109,16 +109,8 @@ const RegisterUser = () => {
       .min(6, "password must be at least 6 char")
       .required("Required"),
 
-    MobileNumber: Yup.number()
-      .typeError("That doesn't look like a phone number")
-      .positive("A phone number can't start with a minus")
-      .integer("A phone number can't include a decimal point")
-      
-    
-      .min(10, "to short")
-     
-      
-     
+    MobileNumber: Yup.string()
+    .test('len', 'Must be exactly 10 number', val => val.length === 10)
       .required("Required"),
     Fathername: Yup.string()
       .min(3, "Too Short")
@@ -128,12 +120,8 @@ const RegisterUser = () => {
       .min(3, "Too Short")
       .max(10, "Too Long")
       .required("Required"),
-    parentnumber: Yup.number()
-      .typeError("That doesn't look like a phone number")
-      .positive("A phone number can't start with a minus")
-      .integer("A phone number can't include a decimal point")
-      .min(10, "Too Short")
-      
+    parentnumber: Yup.string()
+    .test('len', 'Must be exactly 10 number', val => val.length === 10)
       .required(" Required"),
   });
 
@@ -304,5 +292,3 @@ const RegisterUser = () => {
 };
 
 export default RegisterUser;
-
-

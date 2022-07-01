@@ -1,11 +1,16 @@
 .fee-form {
-    margin-left: 10rem;
-    margin-top: 2rem;
+   
+    width: 100%;
 }
 
 .tb{
     margin-left: 3rem;
  
+}
+.student-form{
+    margin-left: 15rem;
+    margin-top: 2rem;
+    
 }
 
 .txn {
@@ -25,18 +30,45 @@
     margin-bottom: 1rem;
 }
 
-.transaction{
+ /* .transaction{
     margin-top: 33rem;
     padding-bottom: 5%;
+    margin-left: 17rem;
     
-}
-.detail{
+}  */
+/* .detail{
    
     border: 1px solid black;
     padding: 5%;
     padding-bottom: 16px!important;
-    /* margin: 10px auto; */
-}
-.deet{
+    margin: 10px auto; 
+ }
+.deet {
+    margin-top: 0rem;
     margin-left: 10px;
-}
+}  */ */
+.feecollection{
+    width: 85%;
+    margin-left: 100%;
+    border: 1px solid black;
+    padding: 5%;
+   
+} 
+ .fee-detail{
+   
+  
+ margin-left: 82rem;
+ 
+    border: 1px solid black;
+    
+ 
+ width: 750px !important;
+ height: 430px !important;
+
+ 
+ }
+ .detaill{
+    padding-bottom: 4rem;
+    border: 1px solid black;
+    height: 300px !important;
+ }

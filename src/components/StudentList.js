@@ -12,7 +12,7 @@ import { BiSortAlt2 } from "react-icons/bi";
 import DataTable from "react-data-table-component";
 import Swal from "sweetalert2";
 import { CSVLink, CSVDownload } from "react-csv";
-
+import {AiOutlineDownload} from "react-icons/ai"
 const StudentList = () => {
   const [dataShow, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -111,10 +111,8 @@ const StudentList = () => {
       button: true,
       selector: (row) => (
         <div>
-          <button onClick={() => deletedata(row.id)}>{<MdDelete />}</button>{" "}
-          <button onClick={() => handleUserEdit(row)}>
-            <MdEdit />
-          </button>
+          <button onClick={() => deletedata(row?.id)}>{<MdDelete />}</button>{" "}
+        
         </div>
       ),
     },
@@ -143,8 +141,9 @@ const StudentList = () => {
                         filename="Students.csv"
                         headers={headers}
                       >
-                        <Button className="btn btn-primary btn-block ">
+                        <Button variant="contained" color="primary" className="btn btn-primary btn-block ">
                           {" "}
+                          {<AiOutlineDownload />}
                           Export CSV
                         </Button>{" "}
                       </CSVLink>
@@ -156,14 +155,14 @@ const StudentList = () => {
                     </Col>
                   </Row>
 
-                  <div class="input-group mb-2">
-                    <div class="form-outline">
+                  <div className="input-group mb-2">
+                    <div className="form-outline">
                       <input
                         type="search"
                         onChange={(e) => {
                           setSearch(e.target.value);
                         }}
-                        class="form-control"
+                        className="form-control"
                         placeholder="Search Name"
                       />
                     </div>

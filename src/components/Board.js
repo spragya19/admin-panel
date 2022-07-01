@@ -1,8 +1,75 @@
 import React from 'react'
 import "../styles/Board.css";
 import hello from  "../assets/hello.svg"
+import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { db } from "../firebase/firebaseConfig";
+import moment from "moment";
 
 const Board = () => {
+
+    const [transactions, setTransactions] = useState([]);
+  
+ 
+  const [transactionsTotal, setTransactionsTotal] = useState({});
+
+
+    useEffect(() => {
+        const fetchTransactions = async () => {
+          try {
+            const transactionQuery = query(
+              collection(db, "transaction"),
+              orderBy("timeStamp", "desc")
+            );
+            const transactionSnapshot = await getDocs(transactionQuery);
+            const transactions = [];
+            transactionSnapshot.forEach((doc) => {
+              transactions.push({ transId: doc.id, ...doc.data() });
+            });
+            setTransactions(transactions);
+    
+            const todayPayment = await getTotal(0);
+            const lastWeekPayment = await getTotal(7);
+            const lastMonth = await getTotal(30);
+            setTransactionsTotal({
+              lastWeekPayment,
+              todayPayment,
+              lastMonth,
+            });
+          } catch (error) {
+            console.log(error);
+          }
+        };
+    
+        fetchTransactions();
+      }, []);
+    
+      const getTotal = async (days) => {
+        console.log("testing    .....");
+        console.log(days);
+    
+        const transactionsQuery = query(
+          collection(db, "transaction"),
+          where(
+            "timeStamp",
+            ">",
+            moment().startOf("date").subtract(days, "d").utc()._d
+          )
+        );
+    
+        const transactionsSnapshot = await getDocs(transactionsQuery);
+        const transactionsAmount = [];
+        transactionsSnapshot.forEach((doc) => {
+          transactionsAmount.push(doc.data().amount);
+        });
+    
+        const totalAmount = transactionsAmount.reduce(function (total, current) {
+          return total + current;
+        }, 0);
+    
+        return totalAmount;
+      };
+
   return (
    
       <main>
@@ -18,7 +85,7 @@ const Board = () => {
 
               <div className="main__cards">
                   <div className="card">{/* === CARDS === */}
-                      <i className="fa fa-file-text fa-2x text-lightblue"></i>
+                      {/* <i className="fa fa-file-text fa-2x text-lightblue"></i> */}
                       <div className="card_inner">
                           <p className="text-primary-p">Total Student</p>
                           <span className="font-bold text-title">10000+</span>
@@ -26,7 +93,7 @@ const Board = () => {
                   </div>
 
                   <div className="card">{/* === CARDS === */}
-                      <i className="fa fa-money-bill fa-2x text-red"></i>
+                  {/* <i className="fa fa-money-bill fa-2x text-red"></i> */}
                       <div className="card_inner">
                           <p className="text-primary-p">Department</p>
                           <span className="font-bold text-title">60+</span>
@@ -34,7 +101,7 @@ const Board = () => {
                   </div>
 
                   <div className="card">{/* === CARDS === */}
-                      <i className="fa fa-archive fa-2x text-yellow"></i>
+                      {/* <i className="fa fa-archive fa-2x text-yellow"></i> */}
                       <div className="card_inner">
                           <p className="text-primary-p">Awards</p>
                           <span className="font-bold text-title">10+</span>
@@ -42,7 +109,7 @@ const Board = () => {
                   </div>
 
                   <div className="card">{/* === CARDS === */}
-                      <i className="fa fa-bars fa-2x text-green"></i>
+                      {/* <i className="fa fa-bars fa-2x text-green"></i> */}
                       <div className="card_inner">
                           <p className="text-primary-p">Revenue</p>
                           <span className="font-bold text-title">40</span>
@@ -75,18 +142,18 @@ const Board = () => {
 
                      <div className="charts__right__cards">
                          <div className="card1">
-                             <h1>500+</h1>
-                             <h5>Total Admission</h5>
+                            <h1 total={transactionsTotal.todayPayment}></h1>
+                             <h5>Today's Payment</h5>
                          </div>
 
                          <div className="card2">
-                             <h1>250+</h1>
-                             <h5>Girls</h5>
+                             <h1 total={transactionsTotal.lastWeekPayment}></h1>
+                             <h5>Last 7 Days Payments</h5>
                          </div>
 
                          <div className="card3">
-                             <h1>250+</h1>
-                             <h5>Boys</h5>
+                             <h1 total= {transactionsTotal.lastMonth}></h1>
+                             <h5>Last 30 Days Payments</h5>
                          </div>
 
                          {/* <div className="card4">

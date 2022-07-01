@@ -2,8 +2,7 @@ main {
     background: #f3f4f6;
     grid-area: main;
     overflow-y: auto;
-    margin-left: 16%;
-   
+    margin-left: 15%;
     width:100%
 }
 

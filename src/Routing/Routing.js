@@ -12,8 +12,9 @@ import { useSelector } from 'react-redux';
 import Authentication from '../components/Authentication';
 import FeeCollection from '../components/FeeCollection';
 import RegisterUser from '../components/RegisterUser';
-import EditStudent from '../components/EditStudent';
+
 import Tranactions from '../components/Transactions';
+import Editclass from "../components/Editclass"
 
 
 
@@ -39,8 +40,9 @@ const Routing = () => {
                  <Route path=':id' element={<Course />}/>
                  </Route>
                  <Route path='ClassList' element={<ClassList />}/>
+                 <Route path='Editclass/:id' element={<Editclass />}/>
                  
-                 <Route path='EditStudent/:studentId' element={<EditStudent />}/>
+              
                  <Route path='FeeCollection' element={<FeeCollection />}/>
                 <Route path='Transactions' element = {<Tranactions />} />
                

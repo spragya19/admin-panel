@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { logSliceActions } from "../Redux/Actions";
 import { toast } from "react-toastify";
 import * as Yup from "yup";
-
+import { AiFillEye } from "react-icons/ai";
 
 function Login() {
   const authentication = getAuth();
@@ -19,6 +19,11 @@ function Login() {
     email: "",
     password: "",
   });
+  const [passwordShown, setPasswordShown] = useState(false);
+  const togglePassword = () => {
+    setPasswordShown(!passwordShown);
+  };
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -44,18 +49,23 @@ function Login() {
         toast("Wrong Credentials / User doesn't exist");
       });
   };
+  
+
   const validate = Yup.object({
-   
     email: Yup.string()
       .email("Email is invalid")
       .required(" Email is Required"),
 
     password: Yup.string()
-      .min(6, "password must be at least 6 char")
-      .required("Required"),
-  })
+      .min(6, "Password must be at least 6 char")
+      .required(" Password is Required"),
+  });
   return (
-    <Formik initialValues={data} onSubmit={handleSubmit} validationSchema={validate}>
+    <Formik
+      initialValues={data}
+      onSubmit={handleSubmit}
+      validationSchema={validate}
+    >
       {() => (
         <section className="vh-100" style={{ backgroundColor: "#eee" }}>
           <div className="container h-100">
@@ -69,8 +79,7 @@ function Login() {
                           Login
                         </p>
                         <Form className="mx-1 mx-md-4">
-                          <div className="d-flex flex-row align-items-center mb-4"></div>
-                          <div className="d-flex flex-row align-items-center mb-4">
+                          <div className="d-flex align-items-end mb-4">
                             <div className="form-outline flex-fill mb-0">
                               <Field
                                 type="email"
@@ -79,31 +88,41 @@ function Login() {
                                 name="email"
                                 placeholder="email"
                               />
-                               <span className="text-danger">
-                               <ErrorMessage name="email" />
-                               </span>
+                              <span className="text-danger">
+                                <ErrorMessage name="email" />
+                              </span>
                             </div>
                           </div>
                           <div className="d-flex flex-row align-items-center mb-4">
                             <div className="form-outline flex-fill mb-0">
                               <Field
-                                type="password"
                                 id="form3Example4c"
-                                className="form-control"
+                                className="d-flex form-control"
                                 placeholder="password"
                                 name="password"
-                              />
+                                style={{    width: "85%",
+                                position: "absolute"}}
+                                type={passwordShown ? "text" : "password"}
+                              ></Field>
+                              <div  className="d-flex justify-content-end ml-12   " style={{    width: "82%",
+                                position: "absolute" }}>
+                                <AiFillEye
+                                  className="d-flex justify-content-end mt-2 ml-5"
+                                
+                                  onClick={togglePassword}
+                                />
+                              </div>
 
-                               <span className="text-danger">
-                               <ErrorMessage name="password" />
-                               </span>
+                              <span className="text-danger">
+                                <ErrorMessage name="password" />
+                              </span>
                             </div>
                           </div>
-                         
-                          <div className="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
+
+                          <div className="d-flex justify-content-center mx-4 mb-3 mb-lg-4 mt-3">
                             <button
                               type="submit"
-                              className="btn btn-primary btn-lg"
+                              className="btn btn-primary btn-lg mt-4"
                             >
                               Login
                             </button>
