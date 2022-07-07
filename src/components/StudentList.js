@@ -12,7 +12,7 @@ import { BiSortAlt2 } from "react-icons/bi";
 import DataTable from "react-data-table-component";
 import Swal from "sweetalert2";
 import { CSVLink, CSVDownload } from "react-csv";
-import {AiOutlineDownload} from "react-icons/ai"
+import { AiOutlineDownload } from "react-icons/ai";
 const StudentList = () => {
   const [dataShow, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -78,7 +78,6 @@ const StudentList = () => {
     { label: "Name", key: "name" },
     { label: "Class", key: "Class" },
     { label: "Roll No", key: "rollNumber" },
-  
   ];
 
   const columns = [
@@ -112,7 +111,6 @@ const StudentList = () => {
       selector: (row) => (
         <div>
           <button onClick={() => deletedata(row?.id)}>{<MdDelete />}</button>{" "}
-        
         </div>
       ),
     },
@@ -141,7 +139,11 @@ const StudentList = () => {
                         filename="Students.csv"
                         headers={headers}
                       >
-                        <Button variant="contained" color="primary" className="btn btn-primary btn-block ">
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          className="btn btn-primary btn-block "
+                        >
                           {" "}
                           {<AiOutlineDownload />}
                           Export CSV
@@ -168,6 +170,7 @@ const StudentList = () => {
                     </div>
                   </div>
                 </div>
+
                 <DataTable
                   columns={columns}
                   data={dataShow.filter((val) => {

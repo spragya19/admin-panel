@@ -1,5 +1,5 @@
-.form{
-    /* margin-left: 200px; */
+/* .l-form{
+ 
     width:100%;
     align-items: center;
     padding: 20px;
@@ -9,13 +9,13 @@
 
 }
 .gradient-custom {
-    /* fallback for old browsers */
+
     background: #f093fb;
     
-    /* Chrome 10-25, Safari 5.1-6 */
+   
     background: white;
     
-    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  
     background:white
     }
     
@@ -27,4 +27,4 @@
     }
     .cardd-registration .select-arrow {
     top: 13px;
-    }
+    } */
