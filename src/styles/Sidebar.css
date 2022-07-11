@@ -149,7 +149,7 @@ input[type=checkbox]:checked ~ .sidebarIconToggle > .diagonal.part-2 {
 }
 .logout {
    
-    width : 25px;
+    width : 15px;
     
    
     color:#fff;
@@ -169,6 +169,7 @@ input[type=checkbox]:checked ~ .sidebarIconToggle > .diagonal.part-2 {
     
 }
 .log{
+    margin-top: 9.5rem;
     color: #fff;
     background-color: black;
     font-size: 1.4rem;

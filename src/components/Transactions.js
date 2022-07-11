@@ -10,11 +10,25 @@ import {
   orderBy,
   serverTimestamp,
 } from "firebase/firestore";
+import {
+  Badge,
+  Box,
+
+
+  CardContent,
+  CircularProgress,
+  Grid,
+  IconButton,
+
+  Paper,
+  TextField,
+  Typography,
+} from "@material-ui/core";
 import { DateRangePicker } from "rsuite";
 import "rsuite/dist/rsuite.min.css";
-
+import "../styles/Transactions.css";
 import "bootstrap/dist/css/bootstrap.css";
-
+import Widget from "./Widget";
 import { Link, useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
 import Spinner from "./Spinner";
@@ -349,99 +363,121 @@ const Tranactions = () => {
         <Spinner />
       ) : (
         <div className="tablee">
+        <Box mt={2}>
+        <Box mb={2}>
+          <Grid container spacing={2}>
+            <Grid xs={12} md={3}>
+              <Widget type="todaysPayment" />
+            </Grid>
+            <Grid xs={12} md={3}>
+              <Widget type="sevendaysPayment" />
+            </Grid>
+            <Grid xs={12} md={3}>
+              <Widget type="monthPayment" />
+            </Grid>
+            <Grid xs={12} md={3}>
+              <Widget type="TotalPayment" />
+            </Grid>
+          </Grid>
+        </Box>
+        </Box>
+        
+     
           <div className="container p-0 m-0">
             <Row>
-              <Col lg={3}></Col>
+            
               <Col sm={12}>
                 <div className="page-headers">
                   <Row className="container">
-                    <Col
-                      xs={12}
-                      className="d-flex align-items-center justify-content-between"
-                    >
-                      <h3 className="page-title">Tranactions</h3>
-                      <div className="col-span-2 relative"></div>
-
-                      <CSVLink
-                        data={dataShow}
-                        className="text-light"
-                        filename="Transaction.csv"
-                        headers={headers}
-                      >
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          className="btn btn-primary btn-block d-flex mt-4"
-                        >
-                          {<AiOutlineDownload />}
-                          Export CSV
-                        </Button>{" "}
-                      </CSVLink>
-                    </Col>
+                  
                   </Row>
+                  <Row>
+                    <div className="top ">
+                      <div className="input-group mb-2 ">
+                        <div className="form-outline">
+                          <input
+                            type="search"
+                            id="search"
+                            onChange={handleSearch}
+                            className="form-control "
+                            placeholder="Search Name"
+                          />
+                        </div>
+                      </div>
+                      <div className="input-group mb-2 ml-6">
+                        <div className="form-outline">
+                          <DateRangePicker
+                            size="lg"
+                            placeholder="Filter by Date"
+                            style={styles}
+                            onChange={hanldeDateChange}
+                          />
+                        </div>
+                      </div>
 
-                  <div className="input-group mb-2">
-                    <div className="form-outline">
-                      <input
-                        type="search"
-                        onChange={handleSearch}
-                        className="form-control"
-                        placeholder="Search Name"
-                      />
-                    </div>
-                  </div>
-                  <div className="input-group mb-2">
-                    <div className="form-outline">
-                      <DateRangePicker
-                        size="lg"
-                        placeholder="Filter by Date"
-                        style={styles}
-                        onChange={hanldeDateChange}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="dropdown">
-                    <button
-                      className="btn btn-primary  dropdown-toggle bg-black "
-                      type="button"
-                      id="dropdownMenuButton"
-                      data-toggle="dropdown"
-                      aria-haspopup="true"
-                      aria-expanded="false"
-                    >
-                      Classes
-                    </button>
-                    <div
-                      className="dropdown-menu"
-                      aria-labelledby="dropdownMenuButton"
-                    >
-                      <option value="">Select Class</option>
-                      <li>
-                        <Link
-                          className="dropdown-item"
-                          to={`/dashboard/Transactions`}
+                      <div className="dropdown">
+                        <button
+                          className="btn secondary  dropdown-toggle bg-black form-outline"
+                          type="button"
+                          id="dropdownMenuButton"
+                          data-toggle="dropdown"
+                          aria-haspopup="true"
+                          aria-expanded="false"
                         >
-                          All
-                        </Link>
-                      </li>
-                      {standard.map((i) => {
-                        return (
-                          <>
-                            <li>
-                              <Link
-                                className="dropdown-item"
-                                to={`/dashboard/Transactions?class=${i?.class}`}
-                              >
-                                {i.class}
-                              </Link>
-                            </li>
-                          </>
-                        );
-                      })}
+                          Classes
+                        </button>
+                        <div
+                          className="dropdown-menu"
+                          aria-labelledby="dropdownMenuButton"
+                        >
+                          <option value="">Select Class</option>
+                          <li>
+                            <Link
+                              className="dropdown-item"
+                              to={`/dashboard/Transactions`}
+                            >
+                              All
+                            </Link>
+                          </li>
+                          {standard.map((i) => {
+                            return (
+                              <>
+                                <li>
+                                  <Link
+                                    className="dropdown-item"
+                                    to={`/dashboard/Transactions?class=${i?.class}`}
+                                  >
+                                    {i.class}
+                                  </Link>
+                                </li>
+                              </>
+                            );
+                          })}
+                        </div>
+                      </div>
+                      <div className="input-group mb-2 ml-4">
+                        <div>
+                          <CSVLink
+                            data={dataShow}
+                            className="text-light"
+                            filename="Transaction.csv"
+                            headers={headers}
+                          >
+                            <Button
+                              variant="contained"
+                              color="primary"
+                              className="btn btn-primary btn-block d-flex "
+                            >
+                              {<AiOutlineDownload />}
+                              Export CSV
+                            </Button>{" "}
+                          </CSVLink>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  </Row>
                 </div>
+
                 <DataTable
                   columns={columns}
                   data={FilteredData}
@@ -454,8 +490,17 @@ const Tranactions = () => {
             </Row>
           </div>
         </div>
+      
       )}
     </>
   );
 };
 export default Tranactions;
+// width: 300px;
+//     border: 1px solid #e5e5ea;
+//     padding: 8px;
+
+
+
+
+// puzzle curtain segment carbon frequent unlock below ski become taxi inhale bachelor

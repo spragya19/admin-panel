@@ -5,6 +5,7 @@ import "../styles/RegisterStudent.css";
 import Spinner from "./Spinner";
 import { toast } from "react-toastify";
 import firebase from "firebase/compat/app";
+import { useRef } from "react";
 import {
   collection,
   addDoc,
@@ -50,7 +51,7 @@ const RegisterStudent = () => {
   const [state, setState] = useState([]);
 
   const adddata = async (data) => {
-    debugger;
+  
     console.log(data);
     await addDoc(collection(db, "student"), {
       name: data.name,
@@ -108,6 +109,9 @@ const RegisterStudent = () => {
 
       const querySnapshot = await getDocs(querys);
       const q = await getDocs(classquerys);
+      //const q2 = query(useRef,
+        // orderBy("name", "asc")
+        // );
       const list = [];
       const c = [];
       querySnapshot.forEach((doc) => {

@@ -12,6 +12,10 @@ import {
   query,
   where,
 } from "firebase/firestore";
+import "react-phone-number-input/style.css";
+import PhoneInput from 'react-phone-input-2'
+
+import 'react-phone-input-2/lib/bootstrap.css'
 import { db } from "../firebase/firebaseConfig";
 import { async } from "@firebase/util";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
@@ -39,7 +43,7 @@ const RegisterUser = () => {
     uid: "",
     userName: "",
   });
-
+  const [value, setValue] = useState();
   const createUserName = async () => {
     const year = new Date().getFullYear().toString().slice(-2);
     const q = query(collection(db, "users"), where("role", "==", "3"));
@@ -109,9 +113,9 @@ const RegisterUser = () => {
       .min(6, "password must be at least 6 char")
       .required("Required"),
 
-    MobileNumber: Yup.string()
-    .test('len', 'Must be exactly 10 number', val => val.length === 10)
-      .required("Required"),
+    // MobileNumber: Yup.string()
+     
+    //   .required("Required"),
     Fathername: Yup.string()
       .min(3, "Too Short")
       .max(10, "Too Long")
@@ -120,9 +124,9 @@ const RegisterUser = () => {
       .min(3, "Too Short")
       .max(10, "Too Long")
       .required("Required"),
-    parentnumber: Yup.string()
-    .test('len', 'Must be exactly 10 number', val => val.length === 10)
-      .required(" Required"),
+    // parentnumber: Yup.string()
+     
+    //   .required(" Required"),
   });
 
   return (
@@ -213,10 +217,25 @@ const RegisterUser = () => {
                       <div className="col-sm-6 xs-12  mt-3">
                         <div className="form-group">
                           <label htmlFor="">Mobile Number</label>
+                          <PhoneInput
+                            placeholder="Enter phone number"
+                            value={value}
+                            name="MobileNumber"
+                            inputStyle={{ width: "100%", height: "40px" }}
+                            onChange={setValue}
+                          />
+                          <span className="text-danger">
+                            <ErrorMessage name="MobileNumber" />
+                          </span>
+                        </div>
+                      </div>
+                      <div className="col-sm-6 xs-12  mt-3">
+                        <div className="form-group">
+                          <label htmlFor="">Address</label>
                           <Field
                             className="form-control"
                             type="number"
-                            name="MobileNumber"
+                            name="Address"
                           />
                           <span className="text-danger">
                             <ErrorMessage name="MobileNumber" />
@@ -257,16 +276,18 @@ const RegisterUser = () => {
                         </div>
                       </div>
 
-                      <div className="col-sm-6 col-xs-12  mt-3">
+                      <div className="col-sm-6 xs-12  mt-3">
                         <div className="form-group">
-                          <label htmlFor="">Parent Number</label>
-                          <Field
-                            className="form-control"
-                            type="number"
-                            name="parentnumber"
+                          <label htmlFor="">Mobile Number</label>
+                          <PhoneInput
+                            placeholder="Enter phone number"
+                            value={value}
+                            name="parentnumbe"
+                            inputStyle={{ width: "100%", height: "40px" }}
+                            onChange={setValue}
                           />
                           <span className="text-danger">
-                            <ErrorMessage name="parentnumber" />
+                            <ErrorMessage name="MobileNumber" />
                           </span>
                         </div>
                       </div>

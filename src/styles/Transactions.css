@@ -1,0 +1,19 @@
+#dropdownMenuButton
+{width: 200px;
+     border: 1px solid #e5e5ea;
+     padding: 8px;
+}
+.dropdown-menu
+{width: 200px;
+    border: 1px solid  black;
+    padding: 8px;
+}
+.top{
+   
+    display: flex ;
+    justify-content: center;
+    margin-left: 5rem;
+}
+#serach{
+    width: 200%;
+}
