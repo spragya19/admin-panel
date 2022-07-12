@@ -15,5 +15,8 @@
     margin-left: 5rem;
 }
 #serach{
-    width: 200%;
+    width: 30rem;
 }
+.page-headers{
+    display: flex;
+margin-left: 20%;}

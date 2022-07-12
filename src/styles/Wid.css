@@ -1,0 +1,132 @@
+a {
+	outline: none;
+	text-decoration: none;
+	color: #555;
+}
+a:hover, a:focus {
+	outline: none;
+	text-decoration: none;
+}
+img {
+	border: 0;
+}
+input, textarea, select {
+	outline: none;
+	resize: none;
+	font-family: 'Muli', sans-serif;
+}
+a, input, button {
+	outline: none !important;
+}
+ button::-moz-focus-inner {
+ border: 0;
+}
+h1, h2, h3, h4, h5, h6 {
+	margin: 0;
+	padding: 0;
+	font-weight: 700;
+	color: #202342;
+	font-family: 'Muli', sans-serif;
+}
+img {
+	border: 0;
+	vertical-align: top;
+	max-width: 100%;
+	height: auto;
+}
+ul, ol {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+p {
+	margin: 0 0 15px 0;
+	padding: 0;
+}
+
+.container-fluid{
+	max-width: 1900px;
+}
+
+
+
+.text-blue{color: #1b00ff;}
+.text-dark{color: #000000;}
+.text-white{color: #ffffff;}
+.height-100-p{height: 100%;}
+.bg-white{background: #ffffff;}
+.border-radius-10{
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+}
+.border-radius-100{
+	-webkit-border-radius: 100%;
+	-moz-border-radius: 100%;
+	border-radius: 100%;
+}
+.box-shadow{
+	-webkit-box-shadow: 0px 0px 28px rgba(0, 0, 0, .08);
+	-moz-box-shadow: 0px 0px 28px rgba(0, 0, 0, .08);
+	box-shadow: 0px 0px 28px rgba(0, 0, 0, .08);
+}
+
+.gradient-style1{
+	background-image: linear-gradient( 135deg, #43CBFF 10%, #9708CC 100%);
+}
+.gradient-style2{
+	background-image: linear-gradient( 135deg, #72EDF2 10%, #5151E5 100%);
+}
+.gradient-style3{
+	background-image: radial-gradient( circle 732px at 96.2% 89.9%,  rgba(70,66,159,1) 0%, rgba(187,43,107,1) 92% );
+}
+.gradient-style4{
+	background-image: linear-gradient( 135deg, #FF9D6C 10%, #BB4E75 100%);
+}
+
+/* widget style 1 */
+
+.widget-style1{
+	padding: 20px 10px;
+}
+.widget-style1 .circle-icon{
+	width: 60px;
+}
+.widget-style1 .circle-icon .icon{
+	width: 60px;
+	height: 60px;
+	background: #ecf0f4;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.widget-style1 .widget-data{
+	width: calc(100% - 150px);
+	padding: 0 15px;
+}
+.widget-style1 .progress-data{
+	width: 90px;
+}
+.widget-style1 .progress-data .apexcharts-canvas{
+	margin: 0 auto;
+}
+
+.widget-style2 .widget-data{
+	padding: 20px;
+}
+
+.widget-style3{
+	padding: 30px 20px;
+}
+.widget-style3 .widget-data{
+	width: calc(100% - 60px);
+}
+.widget-style3 .widget-icon{
+	width: 60px;
+	font-size: 45px;
+	line-height: 1;
+}
+
+.apexcharts-legend-marker{
+	margin-right: 6px !important;
+}

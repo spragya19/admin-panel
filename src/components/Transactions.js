@@ -28,7 +28,7 @@ import { DateRangePicker } from "rsuite";
 import "rsuite/dist/rsuite.min.css";
 import "../styles/Transactions.css";
 import "bootstrap/dist/css/bootstrap.css";
-import Widget from "./Widget";
+
 import { Link, useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
 import Spinner from "./Spinner";
@@ -43,9 +43,10 @@ import { AiOutlineDownload } from "react-icons/ai";
 
 import "react-datepicker/dist/react-datepicker.css";
 import { FcCalendar } from "react-icons/fc";
-import Pdf from "./Pdf";
 import { renderToString } from "react-dom/server";
 import { faChampagneGlasses } from "@fortawesome/free-solid-svg-icons";
+import Wid from "./Wid";
+import Invoice from "./Invoice";
 const useStyles = makeStyles(() => ({
   pdfbutton: {
     backgroundColor: "none",
@@ -115,18 +116,18 @@ const Tranactions = () => {
 
     let pendingFees = +totalFee[0].monthlyfee - monthlyFeePaid;
     const html = renderToString(
-      <Pdf row={row} fee={fee} time={time} pendingFees={pendingFees} />
+      <Invoice row={row} fee={fee} time={time} pendingFees={pendingFees} />
     );
     pdf.html(html, {
       callback: function (pdf) {
         pdf.save("student.pdf");
       },
       html2canvas: { scale: 0.6 },
+      
       x: 10,
-      y: 10,
-      height: 300,
-      width: 200,
-      windowWidth: 700,
+      y: 20,
+      windowWidth: 650,
+      width: 190
     });
   };
 
@@ -363,38 +364,23 @@ const Tranactions = () => {
         <Spinner />
       ) : (
         <div className="tablee">
-        <Box mt={2}>
-        <Box mb={2}>
-          <Grid container spacing={2}>
-            <Grid xs={12} md={3}>
-              <Widget type="todaysPayment" />
-            </Grid>
-            <Grid xs={12} md={3}>
-              <Widget type="sevendaysPayment" />
-            </Grid>
-            <Grid xs={12} md={3}>
-              <Widget type="monthPayment" />
-            </Grid>
-            <Grid xs={12} md={3}>
-              <Widget type="TotalPayment" />
-            </Grid>
-          </Grid>
-        </Box>
-        </Box>
-        
+            <h3>Tranactions</h3>
+            <Wid />
+
+
+         
      
-          <div className="container p-0 m-0">
+          <div className="container p-0 mt-5">
             <Row>
+            
             
               <Col sm={12}>
                 <div className="page-headers">
-                  <Row className="container">
                   
-                  </Row>
                   <Row>
                     <div className="top ">
                       <div className="input-group mb-2 ">
-                        <div className="form-outline">
+                        <div className="form-outline  mr-sm-2 w-110">
                           <input
                             type="search"
                             id="search"
@@ -404,7 +390,7 @@ const Tranactions = () => {
                           />
                         </div>
                       </div>
-                      <div className="input-group mb-2 ml-6">
+                      <div className="input-group mb-2 ml-4">
                         <div className="form-outline">
                           <DateRangePicker
                             size="lg"
@@ -415,7 +401,7 @@ const Tranactions = () => {
                         </div>
                       </div>
 
-                      <div className="dropdown">
+                      <div className="dropdown ml-4  ">
                         <button
                           className="btn secondary  dropdown-toggle bg-black form-outline"
                           type="button"

@@ -51,7 +51,6 @@ const RegisterStudent = () => {
   const [state, setState] = useState([]);
 
   const adddata = async (data) => {
-  
     console.log(data);
     await addDoc(collection(db, "student"), {
       name: data.name,
@@ -110,8 +109,8 @@ const RegisterStudent = () => {
       const querySnapshot = await getDocs(querys);
       const q = await getDocs(classquerys);
       //const q2 = query(useRef,
-        // orderBy("name", "asc")
-        // );
+      // orderBy("name", "asc")
+      // );
       const list = [];
       const c = [];
       querySnapshot.forEach((doc) => {
@@ -159,7 +158,7 @@ const RegisterStudent = () => {
       setLoading(false);
     }
   };
- 
+
   //detail show
   const classsHandler = async (e) => {
     if (e.target.value === "") {
@@ -185,12 +184,10 @@ const RegisterStudent = () => {
 
   return (
     <>
-       {loading && <Spinner />}
+      {loading && <Spinner />}
       {!loading && dataReceived && (
         <Formik initialValues={data} onSubmit={handleSubmit}>
-           
           <Form>
-       
             <div className="student-form">
               <div className="container p-0 m-0 ">
                 <div className="row">
@@ -268,20 +265,8 @@ const RegisterStudent = () => {
                             as="select"
                             label=" select session"
                           >
-                            <option value="April, 2019 - March, 2020">
-                              April, 2019 - March, 2020
-                            </option>
-                            <option value="April, 2020 - March, 2021">
-                              April, 2020 - March, 2021
-                            </option>
-                            <option value="April, 2021 - March, 2022">
-                              April, 2021 - March, 2022
-                            </option>
                             <option value="April, 2022 - March, 2023">
                               April, 2022 - March, 2023
-                            </option>
-                            <option value="April, 2023 - March, 2024">
-                              April, 2023 - March, 2024
                             </option>
                           </Field>
                         </div>

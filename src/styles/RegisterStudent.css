@@ -37,17 +37,19 @@
 
 }
 .reg-detail{
-    margin-top: 25rem !important;
+    margin-top: 22rem !important;
     border: 1px solid black;
-    padding: 5%;
+ 
     margin-left: -21%;
-    width: 700px !important;
-    height: 430px !important;
-   
+    width: 947px !important;
+ height: 360px !important;
    
 
    
 }
 .btn{
     align-items: center;
+}
+.register-student{
+    margin-left: 4rem;
 }

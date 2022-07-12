@@ -6,6 +6,12 @@ import { useEffect, useState } from "react";
 import { db } from "../firebase/firebaseConfig";
 import moment from "moment";
 import Spinner from "./Spinner";
+import Wid from "./Wid";
+import Piechart from "./Piechart";
+import Bargraph from "./Bargraph";
+// import {Chart, ArcElement} from 'chart.js'
+// Chart.register(ArcElement);
+import Chart from "react"
 
 const Board = () => {
   const [transactions, setTransactions] = useState([]);
@@ -16,6 +22,23 @@ const Board = () => {
     weekTotal: "Loading...",
     monthlyTotal: "Loading...",
     loading: false,
+  });
+
+  const [barChartData, setBarChartData] = useState({
+    options: {
+      chart: {
+        id: "basic-bar"
+      },
+      xaxis: {
+        categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998]
+      }
+    },
+    series: [
+      {
+        name: "series-1",
+        data: [30, 40, 45, 50, 49, 60, 70, 91]
+      }
+    ]
   });
 
   const [transactionsTotal, setTransactionsTotal] = useState({});
@@ -94,94 +117,20 @@ const Board = () => {
 
   return (
     <>
+      <h1>hello</h1>
       {data.loading ? (
         <Spinner />
       ) : (
-        <main>
+        <div className="top-Board">
           <div className="main__container">
-            <div className="main__title">
-              <img src={hello} alt="hello" />
-              <div className="main_greeting">
-                <h1>Admin Panel</h1>
-                <p>welcome to admin panel</p>
-              </div>
-            </div>
-
-            <div className="main__cards">
-              <div className="card">
-                <div className="card_inner">
-                  <p className="text-primary-p">Total Students</p>
-                  <span className="font-bold text-title">
-                    {data.noOfStudents}
-                  </span>
-                </div>
-              </div>
-
-              <div className="card">
-                <div className="card_inner">
-                  <p className="text-primary-p">Total Users</p>
-                  <span className="font-bold text-title">{data.noOfUsers}</span>
-                </div>
-              </div>
-
-              <div className="card">
-                <div className="card_inner">
-                  <p className="text-primary-p">Awards</p>
-                  <span className="font-bold text-title">10+</span>
-                </div>
-              </div>
-
-              <div className="card">
-                <div className="card_inner">
-                  <p className="text-primary-p">Revenue</p>
-                  <span className="font-bold text-title">40</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="charts">
-              <div className="charts__left">
-                <div className="charts__left__title">
-                  <div>
-                    <h1>Daily Reports</h1>
-                    <p>Admissions</p>
-                  </div>
-                  <i className="fa fa-usd"></i>
-                </div>
-              </div>
-
-              <div className="charts__right">
-                <div className="charts__right__title">
-                  <div>
-                    <h1>Daily Reports</h1>
-                    <p>Student Admission</p>
-                  </div>
-                  <i className="fa fa-area-chart"></i>
-                </div>
-
-                <div className="charts__right__cards">
-                  <div className="card1">
-                    <h1 total={transactionsTotal.todayPayment}></h1>
-                    <h5>Today's Payment</h5>
-                    <p>₹{data.todayTotal}</p>
-                  </div>
-
-                  <div className="card2">
-                    <h1 total={transactionsTotal.lastWeekPayment}></h1>
-                    <h5>Last 7 Days Payments</h5>
-                    <p>₹{data.weekTotal}</p>
-                  </div>
-
-                  <div className="card3">
-                    <h1 total={transactionsTotal.lastMonth}></h1>
-                    <h5>Last 30 Days Payments</h5>
-                    <p>₹{data.monthlyTotal}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <Wid />
           </div>
-        </main>
+          <div class="container mt-5">
+            <Bargraph />
+  
+</div>
+          
+        </div>
       )}
     </>
   );

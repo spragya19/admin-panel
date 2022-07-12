@@ -12,7 +12,7 @@ import { MdDelete, MdEdit } from "react-icons/md";
 import Swal from "sweetalert2";
 import { CSVLink, CSVDownload } from "react-csv";
 import { paths } from "../Routing/paths";
-import {AiOutlineDownload} from "react-icons/ai";
+import { AiOutlineDownload } from "react-icons/ai";
 
 const ClassList = () => {
   const [dataShow, setData] = useState([]);
@@ -123,63 +123,62 @@ const ClassList = () => {
         <div className="tablee">
           <div className="container p-0 m-0">
             <Row>
-              <Col lg={3}></Col>
-              <Col sm={12}>
-                <div className="page-headers">
-                  <Row className="container">
-                    <Col
-                      xs={12}
-                      className="d-flex align-items-center justify-content-between"
-                    >
-                      <h3 className="page-title">Class</h3>
-                      <CSVLink
-                        data={dataShow}
-                        className="text-dark "
-                        filename="classes.csv"
-                        headers={headers}
-                      >
-                        <Button variant="contained" color="primary" className="btn btn-primary btn-block ">
-                          {" "}
-                          {<AiOutlineDownload />}
-                          Export CSV{" "}
-                        </Button>
-                      </CSVLink>{" "}
-                    </Col>
-                    
-                  </Row>
-
-                  <div className="input-group mb-2">
-                    <div className="form-outline">
-                      <input
-                        type="search"
-                        onChange={(e) => {
-                          setSearch(e.target.value);
-                        }}
-                        className="form-control"
-                        placeholder="Search Class"
-                      />
-                    </div>
+              <div className="page-headers">
+                <h3 className="title">Class</h3>
+                <br></br>
+                <Col className="col">
+                  <ul className="breadcrumb">
+                    <li className="breadcrumb-item"></li>
+                  </ul>
+                </Col>
+                <CSVLink
+                  data={dataShow}
+                  className="text-dark mt-5  "
+                  id="csv"
+                  filename="classes.csv"
+                  headers={headers}
+                >
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    className="btn btn-primary btn-block "
+                  >
+                    {" "}
+                    {<AiOutlineDownload />}
+                    Export CSV{" "}
+                  </Button>
+                </CSVLink>{" "}
+                <div className="input-group mb-2 ml-2">
+                  <div className="form-outline">
+                    <input
+                      type="search"
+                      onChange={(e) => {
+                        setSearch(e.target.value);
+                      }}
+                      className="form-control mt-5"
+                      placeholder="Search Class"
+                    />
                   </div>
                 </div>
+              </div>
 
-                <DataTable
-                  columns={columns}
-                  data={dataShow.filter((val) => {
-                    if (search === "") {
-                      return val;
-                    } else if (
-                      val.class.toLowerCase().includes(search.toLowerCase())
-                    ) {
-                      return val;
-                    }
-                  })}
-                  striped
-                  highlightOnHover
-                  Sorting
-                  defaultSortField="name"
-                  pagination={1 - 5}
-                ></DataTable>
-              </Col>
+              <DataTable
+                columns={columns}
+                data={dataShow.filter((val) => {
+                  if (search === "") {
+                    return val;
+                  } else if (
+                    val.class.toLowerCase().includes(search.toLowerCase())
+                  ) {
+                    return val;
+                  }
+                })}
+                striped
+                highlightOnHover
+                Sorting
+                defaultSortField="name"
+                pagination={1 - 5}
+              ></DataTable>
             </Row>
           </div>
         </div>

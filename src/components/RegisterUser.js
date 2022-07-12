@@ -43,7 +43,7 @@ const RegisterUser = () => {
     uid: "",
     userName: "",
   });
-  const [value, setValue] = useState();
+  const [value, setValue] = useState({mob: "", parentMob: ""});
   const createUserName = async () => {
     const year = new Date().getFullYear().toString().slice(-2);
     const q = query(collection(db, "users"), where("role", "==", "3"));
@@ -70,17 +70,20 @@ const RegisterUser = () => {
       data.userName = await createUserName();
       copy.timestamp = serverTimestamp();
 
+      console.log(data, "Datata");
+
       addDoc(collection(db, "users"), {
         role: data.role,
         userName: data.userName,
         name: data.name,
         email: data.email,
         password: data.password,
-        MobileNumber: data.MobileNumber,
+        MobileNumber: value.mob,
         uid: copy.uid,
         Fathername: data.Fathername,
         Mothername: data.Mothername,
-        parentnumber: data.parentnumber,
+        parentnumber: value.parentMob,
+        timestamp: serverTimestamp()
       });
       toast("Registered Successfully!!");
     } catch (error) {
@@ -219,10 +222,10 @@ const RegisterUser = () => {
                           <label htmlFor="">Mobile Number</label>
                           <PhoneInput
                             placeholder="Enter phone number"
-                            value={value}
+                            value={value.mob}
                             name="MobileNumber"
                             inputStyle={{ width: "100%", height: "40px" }}
-                            onChange={setValue}
+                            onChange={(e) => setValue(oldData => {return {...oldData, mob: e}})}
                           />
                           <span className="text-danger">
                             <ErrorMessage name="MobileNumber" />
@@ -281,10 +284,10 @@ const RegisterUser = () => {
                           <label htmlFor="">Mobile Number</label>
                           <PhoneInput
                             placeholder="Enter phone number"
-                            value={value}
-                            name="parentnumbe"
+                            value={value.parentMob}
+                            name="parentnumber"
                             inputStyle={{ width: "100%", height: "40px" }}
-                            onChange={setValue}
+                            onChange={(e) => setValue(oldData => {return {...oldData, parentMob: e}})}
                           />
                           <span className="text-danger">
                             <ErrorMessage name="MobileNumber" />

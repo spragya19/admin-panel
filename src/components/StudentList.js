@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Row, Col, Card, Form, Button, Table } from "react-bootstrap";
 import "../styles/StudentList.css";
-import { doc, getDoc, query, where } from "firebase/firestore";
+import { doc, getDoc, query, where, orderBy } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 import { collection, getDocs, deleteDoc } from "firebase/firestore";
 import { Link, useNavigate } from "react-router-dom";
@@ -58,6 +58,7 @@ const StudentList = () => {
         querys = query(collection(db, "student"), where("Class", "==", param));
       } else {
         querys = collection(db, "student");
+        querys = query(querys, orderBy("timestamp", "desc"));
       }
 
       const querySnapshot = await getDocs(querys);
@@ -124,71 +125,65 @@ const StudentList = () => {
         <div className="tablee">
           <div className="container p-0 m-0">
             <Row>
-              <Col lg={3}></Col>
-              <Col sm={12}>
-                <div className="page-headers">
-                  <Row className="container">
-                    <Col
-                      xs={12}
-                      className="d-flex align-items-center justify-content-between"
-                    >
-                      <h3 className="page-title">Student</h3>
-                      <CSVLink
-                        data={dataShow}
-                        className="text-dark "
-                        filename="Students.csv"
-                        headers={headers}
-                      >
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          className="btn btn-primary btn-block "
-                        >
-                          {" "}
-                          {<AiOutlineDownload />}
-                          Export CSV
-                        </Button>{" "}
-                      </CSVLink>
-                    </Col>
-                    <Col className="col">
-                      <ul className="breadcrumb">
-                        <li className="breadcrumb-item"></li>
-                      </ul>
-                    </Col>
-                  </Row>
+              <div className="page-headers">
+                <h3 className="title">Student</h3>
+                <br></br>
 
-                  <div className="input-group mb-2">
-                    <div className="form-outline">
-                      <input
-                        type="search"
-                        onChange={(e) => {
-                          setSearch(e.target.value);
-                        }}
-                        className="form-control"
-                        placeholder="Search Name"
-                      />
-                    </div>
+                <Col className="col">
+                  <ul className="breadcrumb">
+                    <li className="breadcrumb-item"></li>
+                  </ul>
+                </Col>
+
+                <CSVLink
+                  data={dataShow}
+                  className="text-dark mt-5 "
+                  id="csv"
+                  filename="Students.csv"
+                  headers={headers}
+                >
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    className="btn btn-primary btn-block "
+                  >
+                    {" "}
+                    {<AiOutlineDownload />}
+                    Export CSV
+                  </Button>{" "}
+                </CSVLink>
+
+                <div className="input-group mb-2 ml-2">
+                  <div className="form-outline">
+                    <input
+                      type="search"
+                      onChange={(e) => {
+                        setSearch(e.target.value);
+                      }}
+                      className="form-control mt-5"
+                      placeholder="Search Name"
+                    />
                   </div>
                 </div>
+              </div>
 
-                <DataTable
-                  columns={columns}
-                  data={dataShow.filter((val) => {
-                    if (search === "") {
-                      return val;
-                    } else if (
-                      val.name.toLowerCase().includes(search.toLowerCase())
-                    ) {
-                      return val;
-                    }
-                  })}
-                  striped
-                  highlightOnHover
-                  Sorting
-                  defaultSortField="name"
-                  pagination={1 - 5}
-                ></DataTable>
-              </Col>
+              <DataTable
+                columns={columns}
+                data={dataShow.filter((val) => {
+                  if (search === "") {
+                    return val;
+                  } else if (
+                    val.name.toLowerCase().includes(search.toLowerCase())
+                  ) {
+                    return val;
+                  }
+                })}
+                striped
+                highlightOnHover
+                Sorting
+                defaultSortField="name"
+                pagination={1 - 5}
+              ></DataTable>
             </Row>
           </div>
         </div>
