@@ -58,9 +58,9 @@ const Tranactions = () => {
   const [dropdown, setDropdown] = useState([]);
   const [standard, setStandard] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [filter, setFilter] = useState({ filterText: "" });
-  const [order, setOrder] = useState("ASC");
-  const [search, setSearch] = useState("");
+  // const [filter, setFilter] = useState({ filterText: "" });
+  // const [order, setOrder] = useState("ASC");
+  // const [search, setSearch] = useState("");
   const [q, setQ] = useState("");
   const [FilteredData, setFilteredData] = useState([]);
   const [flags, setFlags] = useState({
@@ -149,9 +149,10 @@ const Tranactions = () => {
 
       setData(list);
 
-      const txnQuery = collection(db, "transaction");
+      let txnQuery = collection(db, "transaction");
+      txnQuery = query(txnQuery, orderBy("timestamp", "desc"));
       const timestamp = serverTimestamp();
-      orderBy("timeStamp", "desc");
+
       const txnSnap = await getDocs(txnQuery);
       let userData = [];
       txnSnap.forEach((doc) => {
@@ -208,7 +209,7 @@ const Tranactions = () => {
   useEffect(() => {
     (async () => {
       const querySnapshot = collection(db, "classes");
-      const Sort = query(querySnapshot, orderBy("timestamp", "asc"));
+      const Sort = query(querySnapshot, orderBy("timestamp", "desc"));
       const querySnap2 = await getDocs(Sort);
       const list = [];
       querySnap2.forEach((doc) => {

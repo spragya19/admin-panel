@@ -1,6 +1,5 @@
 import React from "react";
 import "../styles/Board.css";
-import hello from "../assets/hello.svg";
 import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { db } from "../firebase/firebaseConfig";
@@ -9,9 +8,8 @@ import Spinner from "./Spinner";
 import Wid from "./Wid";
 import Piechart from "./Piechart";
 import Bargraph from "./Bargraph";
-// import {Chart, ArcElement} from 'chart.js'
-// Chart.register(ArcElement);
-import Chart from "react"
+
+
 
 const Board = () => {
   const [transactions, setTransactions] = useState([]);
@@ -24,22 +22,7 @@ const Board = () => {
     loading: false,
   });
 
-  const [barChartData, setBarChartData] = useState({
-    options: {
-      chart: {
-        id: "basic-bar"
-      },
-      xaxis: {
-        categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998]
-      }
-    },
-    series: [
-      {
-        name: "series-1",
-        data: [30, 40, 45, 50, 49, 60, 70, 91]
-      }
-    ]
-  });
+  
 
   const [transactionsTotal, setTransactionsTotal] = useState({});
 

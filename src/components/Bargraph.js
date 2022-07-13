@@ -1,47 +1,187 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { MDBContainer } from "mdbreact";
 import { Bar } from "react-chartjs-2";
-import "../styles/Bargraph.css"
-import Highcharts from 'highcharts'
-import HighchartsReact from 'highcharts-react-official'
+import "../styles/Bargraph.css";
+import Highcharts from "highcharts";
+import HighchartsReact from "highcharts-react-official";
+import { useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase/firebaseConfig";
+
+const Bargraph = () => {
+  const [data, setData] = useState({
+    noOfStudents: "Loading...",
+   
+    loading: true,
+  });
   
-const  Bargraph = () => {
+  const [stuData, setStuData] = useState({
+    "1st": 0,
+    "2nd": 0,
+    "3rd": 0,
+    "4th": 0,
+    "5th": 0,
+    "6th": 0,
+    "7th": 0,
+    "8th": 0,
+    "9th": 0,
+    "10th": 0,
+    "11th": 0,
+    "12th": 0,
+  });
+
+
+  useEffect(() => {
+    async function getData() {
+      let querys = null;
+    querys = collection(db, "student");
+    const querySnapshot = await getDocs(querys);
+    const list = [];
+    querySnapshot.forEach((doc) => {
+      list.push({ ...doc.data(), id: doc.id });
+    });
+    let flag = false;
+    let val = null;
+    let filteredData = [];
+    for(let i in list) {
+      flag = false;
+      for(let j in filteredData) {
+        if(filteredData[j][list[i].Class]) {
+          flag = true;
+          val = filteredData[j][list[i].Class];
+          filteredData[j][list[i].Class] = val + 1;
+          break;
+        }
+      }
+      if(!flag)
+      filteredData.push({[list[i].Class]: 1});
+    }
+
+    filteredData = filteredData;
+    let newData = {};
+
+    for(let i in filteredData)  {
+      newData = {...newData, ...filteredData[i]}
+    }
+
+    setStuData(oldData => {return {...oldData, ...newData}});
+    setData(oldData => {return {...oldData, loading: false}});
+    }
+    getData();
+  }, []);
+
+ 
   const options = {
     title: {
-      text: 'Total Student Graph'
+      text: "Total Student Graph",
     },
     chart: {
-      type: 'column'
+      type: "column",
     },
-    series: [{
-      data: [1, 2, 3, 4, 5,6,7,8,9,10,11,12 ,13]
-    }],
 
     yAxis: {
       title: {
-        text: 'Total Student'
-      }
-  
+        text: " Students",
+      },
     },
-    xAxis:  {
+    xAxis: {
       title: {
-        text: 'Class'
-      }
+        text: "Class",
+      },
+      categories: [
+        '1st',
+        '2nd',
+        '3rd',
+        '4th',
+        '5th',
+        '6th',
+        '7th',
+        '8th',
+        '9th',
+        '10th',
+        '11th',
+        '12th'
+    ],
     },
-    
-  
-  }
-  
-  
-  
+    legend: {
+      enabled: false,
+    },
+    plotOptions: {
+      series: {
+        borderWidth: 0,
+        dataLabels: {
+          enabled: true,
+          format: "{point.y}",
+        },
+      },
+    },
+
+    series: [
+      {
+        name: "Number of Students",
+        colorByPoint: true,
+        data: [
+          {
+            name: "1st",
+            y: stuData["1st"],
+          },
+          {
+            name: "2nd",
+            y: stuData["2nd"],
+          },
+          {
+            name: "3rd",
+            y: stuData["3rd"],
+          },
+          {
+            name: "4th",
+            y: stuData["4th"],
+          },
+          {
+            name: "5th",
+            y: stuData["5th"],
+          },
+          {
+            name: "6th",
+            y: stuData["6th"],
+          },
+          {
+            name: "7th",
+            y: stuData["7th"],
+          },
+          {
+            name: "8th",
+
+            y: stuData["8th"],
+          },
+          {
+            name: "9th",
+            y: stuData["9th"],
+          },
+          {
+            name: "10th",
+            y: stuData["10th"],
+          },
+          {
+            name: "11th",
+            y: stuData["11th"],
+          },
+          {
+            name: "12th",
+            y: stuData["12th"],
+          },
+        ],
+      },
+    ],
+  };
+
   return (
-    <div >
-    <HighchartsReact
-      highcharts={Highcharts}
-      options={options}
-    />
-  </div>
+    <>
+    {!data.loading && <div>
+      <HighchartsReact highcharts={Highcharts} options={options} />
+    </div>}
+    </>
   );
-}
-  
+};
+
 export default Bargraph;

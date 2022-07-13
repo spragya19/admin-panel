@@ -232,7 +232,7 @@ const RegisterUser = () => {
                           </span>
                         </div>
                       </div>
-                      <div className="col-sm-6 xs-12  mt-3">
+                      {/* <div className="col-sm-6 xs-12  mt-3">
                         <div className="form-group">
                           <label htmlFor="">Address</label>
                           <Field
@@ -244,7 +244,7 @@ const RegisterUser = () => {
                             <ErrorMessage name="MobileNumber" />
                           </span>
                         </div>
-                      </div>
+                      </div> */}
 
                       <div className="col-xs-12  mt-3">
                         <h5 className="form-title">

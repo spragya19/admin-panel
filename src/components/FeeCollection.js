@@ -550,13 +550,10 @@ const FeeCollection = () => {
                                     as="select"
                                     placeholder="select Month"
                                     value={selectedData?.month}
-                                    onChange={handleTxnSubmit}
+                                    
                                   >
                                     <option>Select Month</option>
-                                    <option value="Jan">January</option>
-                                    <option value="feb">February</option>
-                                    <option value="march">March</option>
-                                    <option value="april">April,</option>
+                                   
                                     <option value="may">May</option>
                                     <option value="june">May</option>
                                     <option value="july">july</option>
@@ -565,6 +562,10 @@ const FeeCollection = () => {
                                     <option value="oct">October</option>
                                     <option value="nov">November</option>
                                     <option value="dec">December</option>
+                                    <option value="Jan">January</option>
+                                    <option value="feb">February</option>
+                                    <option value="march">March</option>
+                                    <option value="april">April</option>
                                   </Field>
                                 </div>
                               </div>
