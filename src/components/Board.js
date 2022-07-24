@@ -3,16 +3,13 @@ import "../styles/Board.css";
 import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { db } from "../firebase/firebaseConfig";
-import moment from "moment";
 import Spinner from "./Spinner";
 import Wid from "./Wid";
-import Piechart from "./Piechart";
 import Bargraph from "./Bargraph";
-
+import Piechart from "./Piechart";
 
 
 const Board = () => {
-  const [transactions, setTransactions] = useState([]);
   const [data, setData] = useState({
     noOfStudents: "Loading...",
     noOfUsers: "Loading...",
@@ -21,8 +18,6 @@ const Board = () => {
     monthlyTotal: "Loading...",
     loading: false,
   });
-
-  
 
   const [transactionsTotal, setTransactionsTotal] = useState({});
 
@@ -108,11 +103,15 @@ const Board = () => {
           <div className="main__container">
             <Wid />
           </div>
-          <div class="container mt-5">
-            <Bargraph />
-  
-</div>
-          
+          <div className="grap">
+            <div className="pie">
+              <Piechart />
+             
+            </div>
+            <div className="graph">
+              <Bargraph />
+            </div>
+          </div>
         </div>
       )}
     </>

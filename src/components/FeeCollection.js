@@ -107,6 +107,7 @@ const FeeCollection = () => {
   const adddata = async (formData) => {
     try {
       await addDoc(collection(db, "transaction"), formData);
+      
 
       const stuDB = collection(db, "student");
       const student = query(stuDB, where("userName", "==", formData.userName));
@@ -497,6 +498,12 @@ const FeeCollection = () => {
                                   >
                                     Monthly Fee
                                   </option>
+                                  <option
+                                    value="fine"
+                                    disabled={flags.fineDisable}
+                                  >
+                                   Fine
+                                  </option>
                                 </Field>
                               </div>
                             </div>
@@ -553,7 +560,6 @@ const FeeCollection = () => {
                                     
                                   >
                                     <option>Select Month</option>
-                                   
                                     <option value="may">May</option>
                                     <option value="june">May</option>
                                     <option value="july">july</option>

@@ -15,6 +15,8 @@ const Bargraph = () => {
     loading: true,
   });
   
+  const [dummy, setDummy] = useState()
+
   const [stuData, setStuData] = useState({
     "1st": 0,
     "2nd": 0,
@@ -31,6 +33,56 @@ const Bargraph = () => {
   });
 
 
+  function dayDifference(time) {
+    let todaysDate = Date.now();
+    let difference =
+      new Date(todaysDate).getTime() - new Date(time * 1000).getTime();
+    let dayDifference = difference / (1000 * 60 * 60 * 24);
+    return Math.round(dayDifference);
+  }
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        setData((oldData) => {
+          return { ...oldData, loading: true };
+        });
+        let stuCount = 0;
+        const studentDB = collection(db, "student");
+        const stuSnap = await getDocs(studentDB);
+        stuSnap.forEach((doc) => ++stuCount);
+        setData((oldData) => {
+          return { ...oldData, noOfStudents: stuCount };
+        });
+
+        let userCount = 0;
+        const userDB = collection(db, "users");
+        const userSnap = await getDocs(userDB);
+        userSnap.forEach((doc) => ++userCount);
+        setData((oldData) => {
+          return { ...oldData, noOfUsers: userCount };
+        });
+
+        
+
+       
+        setData((oldData) => {
+          return { ...oldData, loading: false };
+        });
+      } catch (error) {
+        console.log(error);
+        setData((oldData) => {
+          return { ...oldData, loading: false };
+        });
+      }
+    };
+
+    fetchTransactions();
+  }, []);
+
+
+
+
   useEffect(() => {
     async function getData() {
       let querys = null;
@@ -40,6 +92,7 @@ const Bargraph = () => {
     querySnapshot.forEach((doc) => {
       list.push({ ...doc.data(), id: doc.id });
     });
+    setDummy(list)
     let flag = false;
     let val = null;
     let filteredData = [];
@@ -73,7 +126,7 @@ const Bargraph = () => {
  
   const options = {
     title: {
-      text: "Total Student Graph",
+      text: " Student Graph",
     },
     chart: {
       type: "column",
@@ -86,7 +139,7 @@ const Bargraph = () => {
     },
     xAxis: {
       title: {
-        text: "Class",
+        text: "Classes",
       },
       categories: [
         '1st',
@@ -115,7 +168,6 @@ const Bargraph = () => {
         },
       },
     },
-
     series: [
       {
         name: "Number of Students",
@@ -170,15 +222,88 @@ const Bargraph = () => {
             name: "12th",
             y: stuData["12th"],
           },
+          
         ],
+        plotOptions: {
+          series: {
+              allowPointSelect: true
+          }
+      }
       },
+
+      {
+        name: 'No of Students',
+        type: 'spline',
+        data: [
+          {
+            name: "1st",
+            y: stuData["1st"],
+          },
+          {
+            name: "2nd",
+            y: stuData["2nd"],
+          },
+          {
+            name: "3rd",
+            y: stuData["3rd"],
+          },
+          {
+            name: "4th",
+            y: stuData["4th"],
+          },
+          {
+            name: "5th",
+            y: stuData["5th"],
+          },
+          {
+            name: "6th",
+            y: stuData["6th"],
+          },
+          {
+            name: "7th",
+            y: stuData["7th"],
+          },
+          {
+            name: "8th",
+
+            y: stuData["8th"],
+          },
+          {
+            name: "9th",
+            y: stuData["9th"],
+          },
+          {
+            name: "10th",
+            y: stuData["10th"],
+          },
+          {
+            name: "11th",
+            y: stuData["11th"],
+          },
+          {
+            name: "12th",
+            y: stuData["12th"],
+          },
+          
+        ],
+        plotOptions: {
+          series: {
+              allowPointSelect: true
+          }
+      }
+      }
     ],
   };
 
   return (
     <>
     {!data.loading && <div>
+
       <HighchartsReact highcharts={Highcharts} options={options} />
+       <p className="text-center font-15 mb-1 mt-5 text-truncate">
+          Total Admission
+        </p>
+        <h2 className="text-center mt-0  ">{data.noOfStudents} students </h2>
     </div>}
     </>
   );

@@ -13,13 +13,10 @@ import {
 import {
   Badge,
   Box,
-
-
   CardContent,
   CircularProgress,
   Grid,
   IconButton,
-
   Paper,
   TextField,
   Typography,
@@ -58,9 +55,6 @@ const Tranactions = () => {
   const [dropdown, setDropdown] = useState([]);
   const [standard, setStandard] = useState([]);
   const [loading, setLoading] = useState(false);
-  // const [filter, setFilter] = useState({ filterText: "" });
-  // const [order, setOrder] = useState("ASC");
-  // const [search, setSearch] = useState("");
   const [q, setQ] = useState("");
   const [FilteredData, setFilteredData] = useState([]);
   const [flags, setFlags] = useState({
@@ -123,11 +117,11 @@ const Tranactions = () => {
         pdf.save("student.pdf");
       },
       html2canvas: { scale: 0.6 },
-      
+
       x: 10,
       y: 20,
       windowWidth: 650,
-      width: 190
+      width: 190,
     });
   };
 
@@ -365,19 +359,22 @@ const Tranactions = () => {
         <Spinner />
       ) : (
         <div className="tablee">
-            <h3>Tranactions</h3>
-            <Wid />
-
-
+          
+          <h3>Tranactions</h3>
          
-     
+          <Wid />
+  
+          <div className="tab">
+          <div className="tr mt-2 ml-3">
+          
+          <h5 className="text-muted mt-0 fs-5">Data Table</h5>
+          <p className="text-muted  mx-auto sp-line-1 fs-6">Traditional heading elements are designed to work best in the meat of your page content.</p>
+          </div>
+
           <div className="container p-0 mt-5">
             <Row>
-            
-            
               <Col sm={12}>
                 <div className="page-headers">
-                  
                   <Row>
                     <div className="top ">
                       <div className="input-group mb-2 ">
@@ -454,17 +451,16 @@ const Tranactions = () => {
                               variant="contained"
                               color="primary"
                               className="btn btn-primary btn-block d-flex "
-                            >
+                            >{" "}
                               {<AiOutlineDownload />}
-                              Export CSV
-                            </Button>{" "}
-                          </CSVLink>
+                              Export CSV{" "}
+                            </Button>
+                          </CSVLink>{" "}
                         </div>
                       </div>
                     </div>
                   </Row>
                 </div>
-
                 <DataTable
                   columns={columns}
                   data={FilteredData}
@@ -477,17 +473,9 @@ const Tranactions = () => {
             </Row>
           </div>
         </div>
-      
+        </div>
       )}
     </>
   );
 };
 export default Tranactions;
-// width: 300px;
-//     border: 1px solid #e5e5ea;
-//     padding: 8px;
-
-
-
-
-// puzzle curtain segment carbon frequent unlock below ski become taxi inhale bachelor
