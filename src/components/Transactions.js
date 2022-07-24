@@ -25,7 +25,6 @@ import { DateRangePicker } from "rsuite";
 import "rsuite/dist/rsuite.min.css";
 import "../styles/Transactions.css";
 import "bootstrap/dist/css/bootstrap.css";
-
 import { Link, useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
 import Spinner from "./Spinner";
@@ -37,7 +36,6 @@ import moment from "moment";
 import { jsPDF } from "jspdf";
 import { FaRegFilePdf } from "react-icons/fa";
 import { AiOutlineDownload } from "react-icons/ai";
-
 import "react-datepicker/dist/react-datepicker.css";
 import { FcCalendar } from "react-icons/fc";
 import { renderToString } from "react-dom/server";
@@ -114,7 +112,7 @@ const Tranactions = () => {
     );
     pdf.html(html, {
       callback: function (pdf) {
-        pdf.save("student.pdf");
+        pdf.save(`${row.name}-${new Date().getTime()}.pdf`);
       },
       html2canvas: { scale: 0.6 },
 
@@ -133,6 +131,7 @@ const Tranactions = () => {
         querys = query(collection(db, "student"), where("Class", "==", param));
       } else {
         querys = collection(db, "student");
+        querys = query(querys, orderBy("timestamp", "desc"));
       }
 
       const querySnapshot = await getDocs(querys);
@@ -253,17 +252,23 @@ const Tranactions = () => {
   console.log("dataShow");
 
   const columns = [
+    // {
+    //   name: "User ID",
+    //   selector: (row) => row.userName,
+
+    //   sortable: true,
+    // },
+
     {
-      name: "User ID",
-      selector: (row) => row.userName,
+      name: "Roll No.",
+      selector: (row) => row.rollNumber,
 
       sortable: true,
     },
-
+   
     {
-      name: "Roll Number",
-      selector: (row) => row.rollNumber,
-
+      name: "Class",
+      selector: (row) => row.Class,
       sortable: true,
     },
     {
@@ -271,21 +276,7 @@ const Tranactions = () => {
       selector: (row) => row.name,
       sortable: true,
     },
-    {
-      name: "Class",
-      selector: (row) => row.Class,
-      sortable: true,
-    },
-    {
-      name: "Paid On",
-      selector: (row) => {
-        let time = transactionData.find((x) => x.uName == row.userName);
-        time = time
-          ? new Date(time.lastTxnDate.seconds * 1000).toLocaleDateString()
-          : "Na";
-        return time;
-      },
-    },
+  
     {
       name: "Admission Fee",
       selector: (row) => {
@@ -341,6 +332,18 @@ const Tranactions = () => {
         );
       },
     },
+    {
+      name: "Paid On",
+      selector: (row) => {
+        let time = transactionData.find((x) => x.uName == row.userName);
+        time = time
+          ? moment(time.lastTxnDate.seconds * 1000).format("DD MMMM,YY hh:mm A")
+          : "Na";
+        return time;
+      },
+
+      
+    },
   ];
 
   const handleSearch = (e) => {
@@ -359,120 +362,127 @@ const Tranactions = () => {
         <Spinner />
       ) : (
         <div className="tablee">
-          
           <h3>Tranactions</h3>
-         
+
           <Wid />
-  
+
           <div className="tab">
-          <div className="tr mt-2 ml-3">
-          
-          <h5 className="text-muted mt-0 fs-5">Data Table</h5>
-          <p className="text-muted  mx-auto sp-line-1 fs-6">Traditional heading elements are designed to work best in the meat of your page content.</p>
-          </div>
+            <div className="tr mt-2 ml-3">
+              <h5 className="text-muted mt-0 fs-5">Data Table</h5>
+              <p className="text-muted  mx-auto sp-line-1 fs-6">
+                Traditional heading elements are designed to work best in the
+                meat of your page content.
+              </p>
+            </div>
 
-          <div className="container p-0 mt-5">
-            <Row>
-              <Col sm={12}>
-                <div className="page-headers">
-                  <Row>
-                    <div className="top ">
-                      <div className="input-group mb-2 ">
-                        <div className="form-outline  mr-sm-2 w-110">
-                          <input
-                            type="search"
-                            id="search"
-                            onChange={handleSearch}
-                            className="form-control "
-                            placeholder="Search Name"
-                          />
+            <div className="container p-0 mt-5">
+              <Row>
+                <Col sm={12}>
+                  <div className="page-headers">
+                    <Row>
+                      <div className="top ">
+                        <div className="input-group mb-2 ">
+                          <div className="form-outline  mr-sm-2 w-110">
+                            <input
+                              type="search"
+                              id="search"
+                              onChange={handleSearch}
+                              className="form-control "
+                              placeholder="Search Name"
+                            />
+                          </div>
                         </div>
-                      </div>
-                      <div className="input-group mb-2 ml-4">
-                        <div className="form-outline">
-                          <DateRangePicker
-                            size="lg"
-                            placeholder="Filter by Date"
-                            style={styles}
-                            onChange={hanldeDateChange}
-                          />
+                        <div className="input-group mb-2 ml-4">
+                          <div className="form-outline">
+                            <DateRangePicker
+                              size="lg"
+                              placeholder="Filter by Date"
+                              style={styles}
+                              onChange={hanldeDateChange}
+                            />
+                          </div>
                         </div>
-                      </div>
 
-                      <div className="dropdown ml-4  ">
-                        <button
-                          className="btn secondary  dropdown-toggle bg-black form-outline"
-                          type="button"
-                          id="dropdownMenuButton"
-                          data-toggle="dropdown"
-                          aria-haspopup="true"
-                          aria-expanded="false"
-                        >
-                          Classes
-                        </button>
-                        <div
-                          className="dropdown-menu"
-                          aria-labelledby="dropdownMenuButton"
-                        >
-                          <option value="">Select Class</option>
-                          <li>
-                            <Link
-                              className="dropdown-item"
-                              to={`/dashboard/Transactions`}
-                            >
-                              All
-                            </Link>
-                          </li>
-                          {standard.map((i) => {
-                            return (
-                              <>
-                                <li>
-                                  <Link
-                                    className="dropdown-item"
-                                    to={`/dashboard/Transactions?class=${i?.class}`}
-                                  >
-                                    {i.class}
-                                  </Link>
-                                </li>
-                              </>
-                            );
-                          })}
-                        </div>
-                      </div>
-                      <div className="input-group mb-2 ml-4">
-                        <div>
-                          <CSVLink
-                            data={dataShow}
-                            className="text-light"
-                            filename="Transaction.csv"
-                            headers={headers}
+                        <div className="dropdown ml-4  ">
+                          <button
+                            className="btn secondary  dropdown-toggle bg-black form-outline"
+                            type="button"
+                            multiple
+                            id="dropdownMenuButton"
+                            data-toggle="dropdown"
+                            aria-haspopup="true"
+                            aria-expanded="false"
+                            mult
                           >
-                            <Button
-                              variant="contained"
-                              color="primary"
-                              className="btn btn-primary btn-block d-flex "
-                            >{" "}
-                              {<AiOutlineDownload />}
-                              Export CSV{" "}
-                            </Button>
-                          </CSVLink>{" "}
+                            Classes
+                          </button>
+                          <div
+                            className="dropdown-menu"
+                            aria-labelledby="dropdownMenuButton"
+                          >
+                            <option value="">Select Class</option> 
+                            <option>
+                              <Link
+                                className="dropdown-item"
+                                to={`/dashboard/Transactions`}
+                              >
+                                All
+                              </Link>
+                            </option>
+                            {standard.map((i) => {
+                              return (
+                                <>
+                                  <option>
+                                    <Link
+                                      className="dropdown-item"
+                                      to={`/dashboard/Transactions?class=${i?.class}`}
+                                    >
+                                      {i.class}
+                                    </Link>
+                                  </option>
+                                 
+                                 
+                                </>
+                              );
+                            })}
+                            
+                          </div>
+                        </div>
+                        <div className="input-group mb-2 ml-4">
+                          <div>
+                            <CSVLink
+                              data={dataShow}
+                              className="text-light"
+                              filename="Transaction.csv"
+                              headers={headers}
+                            >
+                              <Button
+                                variant="contained"
+                                color="primary"
+                                className="btn btn-primary btn-block d-flex "
+                              >
+                                {" "}
+                                {<AiOutlineDownload />}
+                                Export CSV{" "}
+                              </Button>
+                            </CSVLink>{" "}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </Row>
-                </div>
-                <DataTable
-                  columns={columns}
-                  data={FilteredData}
-                  striped
-                  highlightOnHover
-                  Sorting
-                  pagination={1 - 5}
-                ></DataTable>
-              </Col>
-            </Row>
+                    </Row>
+                  </div>
+                  <DataTable
+                    columns={columns}
+                    data={FilteredData}
+                    striped
+                    highlightOnHover
+                    Sorting
+                    pagination={1 - 5}
+                  ></DataTable>
+                </Col>
+              </Row>
+            </div>
           </div>
-        </div>
         </div>
       )}
     </>

@@ -1,57 +1,56 @@
 .fee-form {
-   
-    width: 100%;
+  width: 100%;
 }
 
-.tb{
-    margin-left: 3rem;
- 
+.tb {
+  margin-left: 3rem;
 }
-.student-form{
-    margin-left: 15rem;
-    margin-top: 2rem;
-    
+.student-form {
+  margin-left: 15rem;
+  margin-top: 2rem;
 }
 
 .txn {
-    margin-left: 16rem;
-    width: 70vw!important;
+  margin-left: 16rem;
+  width: 70vw !important;
 }
 
 .customtbl {
-    margin-left: -68vw!important;
-  
+  margin-left: -68vw !important;
 }
 
 .cstm-tbll > .d-flex > div {
-    width: 200px;
-    border-bottom: 1px solid black;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+  width: 200px;
+  /* border-bottom: 1px solid black; */
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
-.feecollection{
-    width: 100%;
-    margin-left: 100%;
-    border: 1px solid black;
-    padding: 5%;
-   
-} 
- .fee-detail{
-   
-  
- margin-left: 82rem;
- 
- box-shadow: 0px 0px 28px rgb(0 0 0 / 8%);
-    
- 
- width: 947px !important;
- height: 400px !important;
+.feecollection {
+  width: 100%;
+  margin-left: 100%;
+  box-shadow: 0px 0px 28px rgb(0 0 0 / 8%) !important;
+  padding: 5%;
+}
+.fee-detail {
+  margin-left: 74.5rem;
+  border-radius: 12px;
+  box-shadow: 0 0 10px #ddd;
+  border: 0;
 
- 
- }
- .detaill{
-    padding-bottom: 4rem;
-    border: 1px solid black;
-    height: 300px !important;
- }
+  border-radius: 12px;
+  box-shadow: 0 0 10px #ddd;
+  border: 0;
+
+  width: 947px !important;
+  height: 400px !important;
+}
+.dtls {
+  padding-bottom: 4rem;
+  border-radius: 12px;
+  box-shadow: 0 0 10px #ddd;
+  border: 0;
+  margin-top: 2rem !important;
+  height: 300px !important;
+  width: 947px !important;
+}

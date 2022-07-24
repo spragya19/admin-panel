@@ -18,6 +18,9 @@ const Wid = () => {
   });
 
   const [transactionsTotal, setTransactionsTotal] = useState({});
+  function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
 
   function dayDifference(time) {
     let todaysDate = Date.now();
@@ -102,7 +105,7 @@ const Wid = () => {
             </div>
           </div>
           <div className="widget-data">
-            <div className="weight-800 font-18">₹{data.todayTotal}</div>
+            <div className="weight-800 font-18">{"₹"+numberWithCommas(data.todayTotal)}</div>
             <div className="weight-500">Today's Payment</div>
           </div>
           <div className="progress-data">
@@ -120,7 +123,7 @@ const Wid = () => {
             </div>
           </div>
           <div className="widget-data">
-            <div className="weight-800 font-18">₹{data.weekTotal}</div>
+            <div className="weight-800 font-18">{"₹"+numberWithCommas(data.weekTotal)}</div>
             <div className="weight-500">Last Week Payment</div>
           </div>
           <div className="progress-data">
@@ -138,7 +141,7 @@ const Wid = () => {
             </div>
           </div>
           <div className="widget-data">
-            <div className="weight-800 font-18">₹{data.monthlyTotal}</div>
+            <div className="weight-800 font-18">{"₹"+numberWithCommas(data.monthlyTotal)}</div>
             <div className="weight-500">Last Month Payment</div>
           </div>
           <div className="progress-data">
@@ -156,7 +159,7 @@ const Wid = () => {
             </div>
           </div>
           <div className="widget-data">
-            <div className="weight-800 font-18">₹{data.monthlyTotal}</div>
+            <div className="weight-800 font-18">{"₹"+numberWithCommas(data.monthlyTotal)}</div>
             <div className="weight-500">Total Payment</div>
           </div>
           <div className="progress-data">

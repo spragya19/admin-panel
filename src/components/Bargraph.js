@@ -295,6 +295,8 @@ const Bargraph = () => {
     ],
   };
 
+  
+
   return (
     <>
     {!data.loading && <div>
@@ -303,7 +305,7 @@ const Bargraph = () => {
        <p className="text-center font-15 mb-1 mt-5 text-truncate">
           Total Admission
         </p>
-        <h2 className="text-center mt-0  ">{data.noOfStudents} students </h2>
+        <h2 className="text-center mt-0 mb-5 ">{data.noOfStudents} students </h2>
     </div>}
     </>
   );

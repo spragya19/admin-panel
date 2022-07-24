@@ -99,7 +99,7 @@ console.log(paarm)
                           <h3 className="page-title">Register Class</h3>
                         
                               
-                              <Link to={`/dashboard/ClassList`}><button type="button" className="btn btn-primary">{<AiOutlineUnorderedList />}List</button></Link>
+                              {/* <Link to={`/dashboard/ClassList`}><button type="button" className="btn btn-primary">{<AiOutlineUnorderedList />}List</button></Link> */}
                             
                         </div>
                       </div>

@@ -387,7 +387,45 @@ const FeeCollection = () => {
             flags.studentDetailsReceived && (
               <>
                 <div className="fee-detail  ">
-                  <CardContent>
+                <div >
+              <div className="pt-5">
+                <h3 className="student-detail">
+                  Student details
+                </h3>
+
+                <div class="stdinfo">
+                  <div class="stdinfoin p-2">
+                    <a>
+                      Name: <font>{formData.studentDetails?.name}</font>
+                    </a>
+                   
+                    <a>
+                      Email.: <font>{formData.studentDetails?.email}</font>
+                    </a>
+                   
+                    <a>
+                      Father's Name: <font>{formData.studentDetails?.Fathername}</font>
+                    </a>
+                  </div>
+                  <div class="stdinfoin">
+                  <a>
+                      Class Code: <font> {selectedData.selectedClassCode}</font>
+                    </a>
+                    <a>
+                   Mobile No.: <font>{formData.studentDetails?.MobileNumber}</font>
+                    </a>
+                    <a>
+                      Mother's Name: <font>  {formData.studentDetails?.Mothername}</font>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+                  
+
+                  {/* <CardContent>
                     <CardHeader title="Student Details" />
                     <Grid container spacing={2}>
                       <Grid item md={6} xs={12}>
@@ -432,7 +470,7 @@ const FeeCollection = () => {
                         </ListItem>
                       </Grid>
                     </Grid>
-                  </CardContent>
+                  </CardContent> */}
                   <div className="text-center mt-3 ">
                     {" "}
                     <button
@@ -596,7 +634,7 @@ const FeeCollection = () => {
                               </button>
                             </div>
                             {formData.transactionData.length > 0 && (
-                              <div className="detaill">
+                              <div className="dtls">
                                 <div className="cstm-tbll my-4" ref={ref}>
                                   <div className="mb-5 ml-4">
                                     <h3>Transaction History -</h3>

@@ -83,7 +83,7 @@ const Invoice = ({ row, fee, time, pendingFees }) => {
      
       <tr className="total">
         <td> Admission Fee: </td>
-        <td>₹{fee?.admissionfee}</td>
+        <td>{"₹"+numberWithCommas(fee?.admissionfee)}</td>
       </tr>
 
       <tr className="total">
@@ -92,7 +92,7 @@ const Invoice = ({ row, fee, time, pendingFees }) => {
       </tr>
       <tr className="total">
         <td> Total Fee: </td>
-        <td>₹{fee?.admissionfee+fee?.admissionfee}</td>
+        <td>{"₹"+numberWithCommas(fee?.admissionfee+fee?.admissionfee)}</td>
       </tr>
     </table>
   </div></div>

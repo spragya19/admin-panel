@@ -13,6 +13,7 @@ import DataTable from "react-data-table-component";
 import Swal from "sweetalert2";
 import { CSVLink, CSVDownload } from "react-csv";
 import { AiOutlineDownload } from "react-icons/ai";
+
 const StudentList = () => {
   const [dataShow, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -153,9 +154,10 @@ const StudentList = () => {
                   </Button>{" "}
                 </CSVLink>
 
-                <div className="input-group mb-2 ml-2">
-                  <div className="form-outline">
+                <div className="input-group mb-2 ml-2 mr-2">
+                  <div className="form-outline " >
                     <input
+                    id="name-search"
                       type="search"
                       onChange={(e) => {
                         setSearch(e.target.value);
@@ -186,6 +188,7 @@ const StudentList = () => {
               ></DataTable>
             </Row>
           </div>
+         
         </div>
       )}
     </>

@@ -149,8 +149,10 @@ const ClassList = () => {
                   </Button>
                 </CSVLink>{" "}
                 <div className="input-group mb-2 ml-2">
-                  <div className="form-outline">
+                  <div className="form-outline"   >
                     <input
+                    id="class-list"
+                  
                       type="search"
                       onChange={(e) => {
                         setSearch(e.target.value);

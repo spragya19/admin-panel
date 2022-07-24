@@ -1,9 +1,10 @@
 import React from "react";
-import { CircularProgressbar } from "react-circular-progressbar";
+import { CircularProgressbar,  buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { db } from "../firebase/firebaseConfig";
+import "../styles/Piechart.css"
 
 const Piechart = () => {
   const [data, setData] = useState({
@@ -17,6 +18,9 @@ const Piechart = () => {
 
   const [transactionsTotal, setTransactionsTotal] = useState({});
   const percentage = 44;
+  function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
 
   function dayDifference(time) {
     let todaysDate = Date.now();
@@ -86,6 +90,7 @@ const Piechart = () => {
         });
       }
     };
+    
 
     fetchTransactions();
     console.log(data.noOfStudents, "studentss");
@@ -93,36 +98,40 @@ const Piechart = () => {
 
   return (
     <>
-      <div className="prog mb-6 text-center mt-0 font-17">Revenue</div>
-      <div className="pro mt-5">
-        <CircularProgressbar value={percentage} text={`${percentage}%`} />;
+    <div className="pie-chart-section"></div>
+      <div className="prog text-center mt-0 font-17">Revenue</div>
+      <div className="pro mt-1">
+        <CircularProgressbar value={percentage} text={`${percentage}%`} className="pie-bar"
+          
+          
+           />
         <p class="text-center mt-0  mt-2 font-18  text-truncate">
           Total Payment
         </p>
-        <h2 className="text-center mt-0  ">₹{data.monthlyTotal}</h2>
-        <div className="row mt-3">
-          <div class="col-4">
-            <p class="text-muted font-15 mb-1 text-truncate">Today's Payment</p>
+        <h2 className="text-center mt-0  ">{"₹"+numberWithCommas(data.monthlyTotal)}</h2>
+        <div className=" mt-5 d-flex">
+          <div >
+            <p class="text-muted font-15 mb-1 text-truncate mr-4">Today's Payment</p>
             <h4>
-              <i className="fe-arrow-down text-danger me-1"></i>₹
-              {data.todayTotal}
+              <i className="fe-arrow-down text-danger me-1"></i>
+              {"₹"+numberWithCommas(data.todayTotal)}
             </h4>
           </div>
-          <div className="col-4">
-            <p className="text-muted font-15 mb-1 text-truncate">
+          <div >
+            <p className="text-muted font-15 mb-1 text-truncate mr-4">
               Last week payment
             </p>
             <h4>
-              <i className="fe-arrow-up text-success me-1"></i>₹{data.weekTotal}
+              <i className="fe-arrow-up text-success me-1"></i>{"₹"+numberWithCommas(data.weekTotal)}
             </h4>
           </div>
-          <div className="col-4">
-            <p className="text-muted font-15 mb-1 text-truncate">
+          <div >
+            <p className="text-muted font-15 mb-1 text-truncate mr-4">
               Last Month Payment
             </p>
             <h4>
               <i className="fe-arrow-up text-sucess me-1">
-                ₹{data.monthlyTotal}
+                {"₹"+numberWithCommas(data.monthlyTotal)}
               </i>
             </h4>
           </div>

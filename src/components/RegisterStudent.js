@@ -197,12 +197,12 @@ const RegisterStudent = () => {
                         <div className="topmg">
                           <h3 className="page-title">Register Student</h3>
 
-                          <Link to={`/dashboard/StudentList`}>
+                          {/* <Link to={`/dashboard/StudentList`}>
                             <button type="button" className="btn btn-primary">
                               {" "}
                               {<AiOutlineUnorderedList />}List
                             </button>
-                          </Link>
+                          </Link> */}
                         </div>
                       </div>
 
@@ -283,41 +283,41 @@ const RegisterStudent = () => {
         {!loading && dataReceived && details && (
           <>
             <div className="reg-detail">
-              <CardContent>
-                <CardHeader title="Student Details" />
-                <Grid container spacing={2}>
-                  <Grid item md={6} xs={12}>
-                    <ListItem>
-                      <ListItemText>First Name:-</ListItemText>
-                      <ListItemText> {details.name} </ListItemText>
-                    </ListItem>
+              <div className="pt-5">
+                <h3 className="student-detail">
+                  Student details
+                </h3>
 
-                    <ListItem>
-                      <ListItemText>Parent No.:-</ListItemText>
-                      <ListItemText>{details?.parentnumber} </ListItemText>
-                    </ListItem>
-                    <ListItem>
-                      <ListItemText>Mobile No.:- </ListItemText>
-                      <ListItemText>{details?.MobileNumber} </ListItemText>
-                    </ListItem>
-                    <ListItem>
-                      <ListItemText>Email:-</ListItemText>
-                      <ListItemText> {details?.email} </ListItemText>
-                    </ListItem>
-                  </Grid>
-                  <Grid item md={6} xs={12}>
-                    <ListItem>
-                      <ListItemText>Father's Name:-</ListItemText>
-                      <ListItemText> {details?.Fathername} </ListItemText>
-                    </ListItem>
-                    <ListItem>
-                      <ListItemText>Mother's Name:-</ListItemText>
-                      <ListItemText>{details?.Mothername}</ListItemText>
-                    </ListItem>
-                  </Grid>
-                </Grid>
-              </CardContent>
+                <div class="stdinfo">
+                  <div class="stdinfoin p-2">
+                    <a>
+                      Name: <font>{details.name}</font>
+                    </a>
+                   
+                    <a>
+                      Phone No.: <font>{details?.MobileNumber} </font>
+                    </a>
+                   
+                    <a>
+                      Father's Name: <font>{details?.Fathername}</font>
+                    </a>
+                  </div>
+                  <div class="stdinfoin">
+                  <a>
+                      Email: <font>{details?.email}</font>
+                    </a>
+                    <a>
+                   Parent's No.: <font>{details?.parentnumber}</font>
+                    </a>
+                    <a>
+                      Mother's Name: <font>{details?.Mothername}</font>
+                    </a>
+                  </div>
+                </div>
+              </div>
             </div>
+
+           
             <div className="flex justify-center items-center mb-5">
               <button
                 type="submit"

@@ -2,7 +2,6 @@ import { Field, Formik, Form , ErrorMessage  } from "formik";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import "../styles/SignupLogin.css";
 import * as Yup from "yup";
 
 import firebase from "firebase/compat/app";

@@ -1,16 +1,16 @@
 .tablee{
-    margin-top: 2rem;
-    width: 80%;
-    margin-left: 16.5rem;
+    margin-top: 5rem;
+  width: 80%;
+    margin-left: 2rem;
 }
 .search{
     margin-left: 25rem;
 }
 
-.detaill {
+/* .detaill {
     border: 1px solid black;
     padding: 0px 16px;
-}
+} */
 .title{
     margin-left: -15rem;
 }
@@ -20,4 +20,7 @@
 #csv{
     margin-left: 780px;
 
+}
+#name-search{
+    margin-right: -3rem;
 }
